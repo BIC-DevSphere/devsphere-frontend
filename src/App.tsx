@@ -5,7 +5,7 @@ import UserEvents from "./pages/user/UserEvents";
 import UserHome from "@/pages/user/UserHome";
 import UserMembers from "@/pages/user/UserMembers";
 import UserProjects from "./pages/user/UserProjects";
-import UserLayout from "@/components/UserLayout";
+import UserLayout from "@/components/user/UserLayout";
 
 // Admin Imports
 import AdminLogin from "@/pages/admin/AdminLogin";
@@ -13,7 +13,7 @@ import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminEvents from "@/pages/admin/AdminEvents";
 import AdminMembers from "@/pages/admin/AdminMembers";
 import AdminProjects from "@/pages/admin/AdminProjects";
-import AdminLayout from "@/components/AdminLayout";
+import AdminLayout from "@/components/admin/AdminLayout";
 
 const App = () => {
   return (
