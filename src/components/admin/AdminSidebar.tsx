@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
-const AdminSidebar = () => {
+const AdminSidebar = ({ toggleDarkMode }) => {
   const sidebarItems = [
     { id: 1, name: "Dashboard", path: "/admin" },
     { id: 2, name: "Members", path: "/admin/members" },
@@ -14,7 +15,7 @@ const AdminSidebar = () => {
         <img src="/logo.png" alt="logo" />
         <p className="text-xl font-semibold">DevAdmin</p>
       </div>
-      
+
       <div className="space-y-2">
         {sidebarItems.map((item) => (
           <NavLink
@@ -32,6 +33,10 @@ const AdminSidebar = () => {
             {item.name}
           </NavLink>
         ))}
+      </div>
+
+      <div className="absolute bottom-4">
+        <Button onClick={toggleDarkMode}>Switch Theme</Button>
       </div>
     </div>
   );

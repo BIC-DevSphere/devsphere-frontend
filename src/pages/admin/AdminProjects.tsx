@@ -11,9 +11,8 @@ const AdminProjects = () => {
       try {
         const data = await getAllProjects();
         setProjects(data);
-        console.log(data);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     };
     fetchProjects();
