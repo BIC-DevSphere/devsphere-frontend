@@ -27,14 +27,7 @@ const AdminProjects = () => {
       <div className="">Search and Filter</div>
 
       <div className="flex flex-wrap gap-x-4 gap-y-12">
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
+        <ProjectCard projects={projects} />
       </div>
     </div>
   );

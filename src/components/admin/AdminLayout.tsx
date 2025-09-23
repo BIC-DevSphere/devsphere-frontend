@@ -25,6 +25,8 @@ const AdminLayout = () => {
     } else if (session.data && location.pathname === "/admin/login") {
       navigate("/admin", { replace: true });
     }
+    console.log(session);
+    
   }, [session.data, session.isPending, location.pathname, navigate]);
 
   return (
@@ -32,13 +34,13 @@ const AdminLayout = () => {
       className={`${darkMode && "dark"} min-h-screen max-h-screen overflow-hidden flex bg-neutral-300}`}
     >
       {!hideSidebar && (
-        <div className="w-96 bg-sidebar backdrop-opacity-10 text-sidebar-foreground shadow-lg font-heading relative">
+        <div className="w-96 bg-sidebar backdrop-opacity-10 text-sidebar-foreground shadow-lg relative">
           <AdminSidebar toggleDarkMode={toggleDarkMode} />
         </div>
       )}
 
       {/* Any other pages like Members, Events, Projects... */}
-      <div className="w-full bg-background text-foreground shadow-lg font-heading overflow-y-scroll">
+      <div className="w-full bg-background text-foreground shadow-lg overflow-y-scroll">
         <Outlet />
       </div>
     </div>
