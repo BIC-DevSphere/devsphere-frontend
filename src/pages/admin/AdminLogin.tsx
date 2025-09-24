@@ -24,11 +24,10 @@ const AdminLogin = () => {
 
     // Add your login logic here
     try {
-      const response = await signIn.email({ email, password });
+      const response = await signIn.email({ email, password ,callbackURL: "/admin" });
       console.log("Login successful:", response);
-      // Redirect to admin dashboard or another page
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error(error);
     } finally {
       setIsLoading(false);
     }

@@ -13,21 +13,18 @@ const AdminLayout = () => {
     setDarkMode(!darkMode);
   };
 
+  const isLoginPage = location.pathname === "/admin/login";
   const session = useSession();
   const navigate = useNavigate();
 
   // Handle authentication redirects
   useEffect(() => {
-    if (session.isPending) return;
-
-    if (!session.data && location.pathname !== "/admin/login") {
-      navigate("/admin/login", { replace: true });
-    } else if (session.data && location.pathname === "/admin/login") {
-      navigate("/admin", { replace: true });
+    if (session.data && isLoginPage) {
+      navigate("/admin");
+    } else if (!session.data && !isLoginPage) {
+      navigate("/admin/login");
     }
-    console.log(session);
-    
-  }, [session.data, session.isPending, location.pathname, navigate]);
+  }, [session.data, isLoginPage, navigate]);
 
   return (
     <div
