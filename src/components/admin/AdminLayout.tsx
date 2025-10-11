@@ -19,6 +19,8 @@ const AdminLayout = () => {
 
   // Handle authentication redirects
   useEffect(() => {
+    if (session.isPending) return;
+
     if (session.data && isLoginPage) {
       navigate("/admin");
     } else if (!session.data && !isLoginPage) {
