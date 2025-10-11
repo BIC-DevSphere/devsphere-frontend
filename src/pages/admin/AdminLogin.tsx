@@ -24,18 +24,17 @@ const AdminLogin = () => {
 
     // Add your login logic here
     try {
-      const response = await signIn.email({ email, password });
+      const response = await signIn.email({ email, password ,callbackURL: "/admin" });
       console.log("Login successful:", response);
-      // Redirect to admin dashboard or another page
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="h-full flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
