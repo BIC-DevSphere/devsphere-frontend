@@ -1,6 +1,6 @@
 import ProjectCard from "@/components/ProjectCard";
 import { Button } from "@/components/ui/button";
-import { getAllProjects } from "@/services/admin/api";
+import { getAllProjects } from "@/services/admin/projectServices";
 import { useEffect, useState } from "react";
 
 const AdminProjects = () => {
@@ -17,6 +17,10 @@ const AdminProjects = () => {
     };
     fetchProjects();
   }, []);
+
+  if (!projects || projects.length === 0) {
+    return <div className="p-8">Loading projects...</div>;
+  }
 
   return (
     <div className="grid py-12 px-8 gap-4">
