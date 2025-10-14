@@ -14,19 +14,19 @@ const AdminLayout = () => {
   };
 
   const isLoginPage = location.pathname === "/admin/login";
-  const session = useSession();
-  const navigate = useNavigate();
+  // const session = useSession();
+  // const navigate = useNavigate();
 
-  // Handle authentication redirects
-  useEffect(() => {
-    if (session.isPending) return;
+  // // Handle authentication redirects
+  // useEffect(() => {
+  //   if (session.isPending) return;
 
-    if (session.data && isLoginPage) {
-      navigate("/admin");
-    } else if (!session.data && !isLoginPage) {
-      navigate("/admin/login");
-    }
-  }, [session.data, isLoginPage, navigate]);
+  //   if (session.data && isLoginPage) {
+  //     navigate("/admin");
+  //   } else if (!session.data && !isLoginPage) {
+  //     navigate("/admin/login");
+  //   }
+  // }, [session.data, isLoginPage, navigate]);
 
   return (
     <div
