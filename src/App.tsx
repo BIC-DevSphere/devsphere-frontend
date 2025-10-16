@@ -1,3 +1,4 @@
+import Loading from "@/components/Loading";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 
 // User Imports
@@ -22,10 +23,14 @@ const AdminPublicRoute = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (session.data) {
+    if (!session.isPending && session.data) {
       navigate("/admin");
     }
-  }, [session.data, navigate]);
+  }, [session.isPending, session.data, navigate]);
+
+  if (session.isPending) {
+    return <Loading />;
+  }
 
   return children;
 };
@@ -35,13 +40,18 @@ const AdminPrivateRoute = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!session.data) {
+    if (!session.isPending && !session.data) {
       navigate("/admin/login");
     }
-  }, [session.data, navigate]);
+  }, [session.isPending, session.data, navigate]);
+
+  if (session.isPending) {
+    return <Loading />;
+  }
 
   return children;
 };
+
 const App = () => {
   return (
     <BrowserRouter>
