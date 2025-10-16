@@ -10,7 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/authClient";
+import toast from "react-hot-toast";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -24,8 +25,24 @@ const AdminLogin = () => {
 
     // Add your login logic here
     try {
-      const response = await signIn.email({ email, password, callbackURL: "/admin" });
-      console.log("Login successful:", response);
+      const response = await signIn.email(
+        {
+          email,
+          password,
+          rememberMe: true,
+          callbackURL: "/admin",
+        },
+        {
+          onError: (error) => {
+            console.error("Login error:", error);
+            toast.error("Login failed. Please check your credentials and try again.");
+          },
+          onSuccess: (data) => {
+            console.log("Login success:", data);
+            toast.success("Login successful! Redirecting to admin panel...");
+          },
+        }
+      );
     } catch (error) {
       console.error(error);
     } finally {
