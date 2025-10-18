@@ -15,7 +15,7 @@ import AdminEvents from "@/pages/admin/AdminEvents";
 import AdminMembers from "@/pages/admin/AdminMembers";
 import AdminProjects from "@/pages/admin/AdminProjects";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { useSession } from "./lib/auth-client";
+import { useSession } from "./lib/authClient";
 import { useEffect } from "react";
 
 const AdminPublicRoute = ({ children }) => {
