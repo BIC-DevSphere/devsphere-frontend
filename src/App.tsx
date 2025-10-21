@@ -17,6 +17,7 @@ import AdminProjects from "@/pages/admin/AdminProjects";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useSession } from "./lib/authClient";
 import { useEffect } from "react";
+import AdminSettings from "./pages/admin/AdminSettings";
 
 const AdminPublicRoute = ({ children }) => {
   const session = useSession();
@@ -85,6 +86,8 @@ const App = () => {
           <Route path="events" element={<AdminEvents />} />
           <Route path="members" element={<AdminMembers />} />
           <Route path="projects" element={<AdminProjects />} />
+          <Route path="settings" element={<AdminSettings />} />
+
         </Route>
         <Route />
       </Routes>
