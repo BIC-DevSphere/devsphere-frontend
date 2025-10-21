@@ -1,11 +1,12 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Loading from "@/components/Loading";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 
 // User Imports
 import UserEvents from "./pages/user/UserEvents";
 import UserHome from "@/pages/user/UserHome";
 import UserMembers from "@/pages/user/UserMembers";
 import UserProjects from "./pages/user/UserProjects";
-import UserLayout from "@/components/UserLayout";
+import UserLayout from "@/components/user/UserLayout";
 
 // Admin Imports
 import AdminLogin from "@/pages/admin/AdminLogin";
@@ -13,7 +14,44 @@ import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminEvents from "@/pages/admin/AdminEvents";
 import AdminMembers from "@/pages/admin/AdminMembers";
 import AdminProjects from "@/pages/admin/AdminProjects";
-import AdminLayout from "@/components/AdminLayout";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { useSession } from "./lib/authClient";
+import { useEffect } from "react";
+import AdminSettings from "./pages/admin/AdminSettings";
+
+const AdminPublicRoute = ({ children }) => {
+  const session = useSession();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!session.isPending && session.data) {
+      navigate("/admin");
+    }
+  }, [session.isPending, session.data, navigate]);
+
+  if (session.isPending) {
+    return <Loading />;
+  }
+
+  return children;
+};
+
+const AdminPrivateRoute = ({ children }) => {
+  const session = useSession();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!session.isPending && !session.data) {
+      navigate("/admin/login");
+    }
+  }, [session.isPending, session.data, navigate]);
+
+  if (session.isPending) {
+    return <Loading />;
+  }
+
+  return children;
+};
 
 const App = () => {
   return (
@@ -28,12 +66,28 @@ const App = () => {
         </Route>
 
         {/* Admin Routes */}
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route
+          path="/admin/login"
+          element={
+            <AdminPublicRoute>
+              <AdminLogin />
+            </AdminPublicRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <AdminPrivateRoute>
+              <AdminLayout />
+            </AdminPrivateRoute>
+          }
+        >
           <Route index element={<AdminDashboard />} />
-          <Route path="login" element={<AdminLogin />} />
           <Route path="events" element={<AdminEvents />} />
           <Route path="members" element={<AdminMembers />} />
           <Route path="projects" element={<AdminProjects />} />
+          <Route path="settings" element={<AdminSettings />} />
+
         </Route>
         <Route />
       </Routes>

@@ -10,7 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/authClient";
+import toast from "react-hot-toast";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -24,23 +25,36 @@ const AdminLogin = () => {
 
     // Add your login logic here
     try {
-      const response = await signIn.email({ email, password });
-      console.log("Login successful:", response);
-      // Redirect to admin dashboard or another page
+      const response = await signIn.email(
+        {
+          email,
+          password,
+          rememberMe: true,
+          callbackURL: "/admin",
+        },
+        {
+          onError: (error) => {
+            console.error("Login error:", error);
+            toast.error("Login failed. Please check your credentials and try again.");
+          },
+          onSuccess: (data) => {
+            console.log("Login success:", data);
+            toast.success("Login successful! Redirecting to admin panel...");
+          },
+        }
+      );
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="h-full min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
-            Admin Login
-          </CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Admin Login</CardTitle>
           <CardDescription className="text-center">
             Enter your credentials to access the admin panel
           </CardDescription>
