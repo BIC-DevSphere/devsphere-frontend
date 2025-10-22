@@ -18,6 +18,7 @@ import AdminLayout from '@/components/admin/AdminLayout';
 import { useSession } from './lib/authClient';
 import { useEffect } from 'react';
 import AdminProjectEditor from '@/pages/admin/AdminProjectEditor';
+import AdminSettings from './pages/admin/AdminSettings';
 
 const AdminPublicRoute = ({ children }) => {
   const session = useSession();
@@ -88,6 +89,8 @@ const App = () => {
           <Route path="projects" element={<AdminProjects />} />
           <Route path="projects/:id" element={<AdminProjectEditor />} />
           <Route path="projects/new" element={<AdminProjectEditor />} />
+          <Route path="settings" element={<AdminSettings />} />
+
         </Route>
         <Route />
       </Routes>
