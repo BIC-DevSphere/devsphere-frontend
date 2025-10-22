@@ -13,7 +13,7 @@ const AdminLayout = () => {
     <div
       className={`${darkMode && "dark"} min-h-screen max-h-screen overflow-hidden flex bg-neutral-300}`}
     >
-      <div className="w-96 bg-sidebar backdrop-opacity-10 text-sidebar-foreground shadow-lg relative">
+      <div className="w-32 bg-sidebar backdrop-opacity-10 text-sidebar-foreground shadow-lg relative">
         <AdminSidebar toggleDarkMode={toggleDarkMode} />
       </div>
 

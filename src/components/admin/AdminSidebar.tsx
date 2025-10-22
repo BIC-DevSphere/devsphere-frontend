@@ -1,4 +1,4 @@
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/authClient';
 import toast from 'react-hot-toast';
@@ -9,10 +9,8 @@ import {
   Settings,
   Tags,
   Users,
-  Moon,
-  Sun,
+  LogOut,
 } from 'lucide-react';
-import { useState } from 'react';
 
 const AdminSidebar = ({ toggleDarkMode, isDarkMode = false }) => {
   const sidebarItems = [
@@ -98,11 +96,14 @@ const AdminSidebar = ({ toggleDarkMode, isDarkMode = false }) => {
           })}
         </nav>
 
-        <div className="absolute bottom-4">
+        {/* <div className="absolute bottom-4">
           <Button onClick={toggleDarkMode}>Switch Theme</Button>
-        </div>
-        <div>
-          <Button onClick={logout}>Logout</Button>
+        </div> */}
+        <div className="flex items-center justify-center">
+          <Button onClick={logout}>
+            <LogOut />
+            <p>Logout</p>
+          </Button>
         </div>
       </div>
     </div>
