@@ -9,6 +9,24 @@
     @apply m-0 p-0 box-border;
   }
 }
+/* Add this to your global CSS file */
+.ce-block__content {
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.ce-header {
+  font-weight: bold;
+  margin: 1em 0 0.5em 0;
+  font-size: 1.5rem;
+}
+
+.ce-header[data-level="1"] { font-size: 3em; }
+.ce-header[data-level="2"] { font-size: 2em; }
+.ce-header[data-level="3"] { font-size: 1.17em; }
+.ce-header[data-level="4"] { font-size: 1em; }
+.ce-header[data-level="5"] { font-size: 0.83em; }
+.ce-header[data-level="6"] { font-size: 0.67em; }
 
 @theme inline {
   --font-heading: 'Poppins';
