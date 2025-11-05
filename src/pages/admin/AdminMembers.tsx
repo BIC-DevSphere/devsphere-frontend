@@ -1,12 +1,20 @@
 import { Input } from '@/components/ui/input';
-import { getAllMembers, MembersResponse, Member } from '@/services/admin/memberServices';
-import { SearchIcon, PenIcon, TrashIcon } from 'lucide-react';
+import { getAllMembers, MembersResponse, createMember, Member } from '@/services/admin/memberServices';
+import { SearchIcon, PenIcon, TrashIcon , PlusIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import MemberModal from '@/components/admin/MemberModal';
+import { memberResponse } from '@/types/member.types';
+import { Button } from '@/components/ui/button';
+import { normalizeMemberData , validateMemberData, extractUpdatedMemberFields } from '@/utils/member.utils';
+
 
 const AdminMembers = () => {
   const [members, setMembers] = useState<MembersResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedMember, setSelectedMember] = useState(null)
+  const [memberDataSnapshot, setMemberDataSnapshot] = useState<any>(null)
 
   useEffect(() => {
     fetchMembers();
@@ -19,7 +27,6 @@ const AdminMembers = () => {
         toast.error('No members found');
       }
       setMembers(data);
-      console.log(data);
     } catch (error) {
       console.error('Failed to fetch members:', error);
       toast.error('Failed to fetch members');
@@ -29,10 +36,46 @@ const AdminMembers = () => {
     }
   };
 
+  const handleEdit = (member : memberResponse) => {
+    setSelectedMember(member)
+    setIsModalOpen(true)
+  }
+
+  const handleAddMember = () => {
+    setSelectedMember(null);
+    setIsModalOpen(true);
+  };
+
   const getYear = (dateString: string) => {
     const date = new Date(dateString);
     return date.getFullYear();
   };
+
+  const handleEditMember = async (FormData : any) => {
+
+  }
+
+  const handleSaveMember = async (formData : any) => {
+    try {
+      setIsModalOpen(false)
+      setIsLoading(true)
+      const data = await createMember(formData);
+        setMembers({
+          ...members,
+          data: [...members.data, data]
+        });
+      toast.success('Member created successfully');
+    } catch (error) {
+      console.log(error)
+      toast.error('Failed to create member');
+    }
+    finally{
+      setIsModalOpen(false)
+      setIsLoading(false)
+    }
+  }
+
+
 
   return (
     <div className="grid gap-4 px-8 py-12">
@@ -48,9 +91,10 @@ const AdminMembers = () => {
           />
         </div>
         <div className="create-member-button">
-          <button className="rounded-md bg-blue-600 px-4 py-2 text-white shadow-sm hover:bg-blue-700">
-            Create Member
-          </button>
+        <Button className="flex items-center gap-2 shadow-md" onClick={handleAddMember}>
+          <PlusIcon className="h-4 w-4" />
+          Add New Member
+        </Button>
         </div>
       </div>
 
@@ -66,14 +110,14 @@ const AdminMembers = () => {
           members.data.map((member) => (
             <div
               key={member.id}
-              className="flex overflow-hidden rounded-lg border-1 border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md"
+              className="flex overflow-hidden rounded-lg border-1 border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md max-h-28"
             >
               <div className="w-1/3 bg-gray-100">
                 {member.avatarUrl ? (
                   <img
                     src={member.avatarUrl}
                     alt={member.name}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-fill"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-blue-400 to-purple-500 text-white">
@@ -95,7 +139,7 @@ const AdminMembers = () => {
                     <p className="truncate text-xs text-gray-600">{member.role}</p>
                   </div>
                   <div className="member-card-action-section flex gap-2">
-                    <button className="cursor-pointer rounded-md bg-gray-200 p-1.5 text-gray-500 hover:text-gray-700">
+                    <button onClick={() => handleEdit(member)} className="cursor-pointer rounded-md bg-gray-200 p-1.5 text-gray-500 hover:text-gray-700">
                       <PenIcon size={16} />
                     </button>
                     <button className="cursor-pointer rounded-md bg-red-200 p-1.5 text-red-600 shadow-md">
@@ -127,6 +171,14 @@ const AdminMembers = () => {
           </div>
         )}
       </div>
+      <MemberModal
+    isOpen={isModalOpen}
+    onClose={() => setIsModalOpen(false)}
+    onEdit={handleEditMember}
+    onSave={handleSaveMember}
+    member={selectedMember}
+/>
+
     </div>
   );
 };

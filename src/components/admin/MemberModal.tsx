@@ -10,7 +10,8 @@ interface MemberData {
   role: string;
   year: string;
   status: "ACTIVE" | "INACTIVE";
-  avatarUrl: string;
+  avatar?: File;
+  avatarUrl?: string;
 }
 
 interface FormErrors {
@@ -18,27 +19,30 @@ interface FormErrors {
   role?: string;
   year?: string;
   status?: string;
-  avatarUrl?: string;
+  avatar?: string;
 }
 
 interface MemberModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onEdit: (data: MemberData) => void;
   onSave: (data: MemberData) => void;
   member?: MemberData | null;
 }
 
-const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onSave, member }) => {
+const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSave, member }) => {
   const [formData, setFormData] = useState<MemberData>({
     name: "",
     role: "",
     year: new Date().toISOString().split("T")[0],
     status: "ACTIVE",
+    avatar: null,
     avatarUrl: "",
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isDragOver, setIsDragOver] = useState(false);
+  const [preview, setPreview] = useState<string>("")
 
   useEffect(() => {
     if (member) {
@@ -55,38 +59,13 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onSave, memb
         role: "",
         year: new Date().toISOString().split("T")[0],
         status: "ACTIVE",
-        avatarUrl: "",
+        avatar: null,
       });
     }
     setErrors({});
   }, [member, isOpen]);
 
-  useEffect(() => {
-    return () => {
-      if (formData.avatarUrl.startsWith("blob:")) {
-        URL.revokeObjectURL(formData.avatarUrl);
-      }
-    };
-  }, [formData.avatarUrl]);
-
   if (!isOpen) return null;
-
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-    if (!formData.role.trim()) {
-      newErrors.role = "Role is required";
-    }
-    if (!formData.year || isNaN(Date.parse(formData.year))) {
-      newErrors.year = "Please provide a valid date";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -119,9 +98,9 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onSave, memb
         alert("Image size should be less than 5MB");
         return;
       }
-
-      const imageUrl = URL.createObjectURL(file);
-      setFormData((prev) => ({ ...prev, avatarUrl: imageUrl }));
+      const blobUrl = URL.createObjectURL(file);
+      setPreview(blobUrl);
+      setFormData((prev) => ({ ...prev, avatar: file }));
     }
   };
 
@@ -140,27 +119,38 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onSave, memb
     setIsDragOver(false);
 
     const file = e.dataTransfer.files[0];
+    console.log("File : ", file)
     if (file && file.type.startsWith("image/")) {
       if (file.size > 5 * 1024 * 1024) {
         alert("Image size should be less than 5MB");
         return;
       }
+      const blobUrl = URL.createObjectURL(file);
+      setPreview(blobUrl);
 
-      const imageUrl = URL.createObjectURL(file);
-      setFormData((prev) => ({ ...prev, avatarUrl: imageUrl }));
+      setFormData((prev) => ({ ...prev, avatar: file }));
     }
   };
 
   const handleSave = () => {
-    if (validateForm()) {
-      try {
-        onSave(formData);
-      } catch (error) {
-        console.error("Failed to save member data:", error);
-        alert("An error occurred while saving. Please try again.");
-      }
+    try {
+      onSave(formData);
+    } catch (error) {
+      console.error("Failed to save member data:", error);
+      alert("An error occurred while saving. Please try again.");
     }
-  };
+  }
+
+  const handleEdit = () => {
+    try {
+      onEdit(formData)
+    } catch (error) {
+      console.error("Failed to save member data:", error);
+      alert("An error occurred while saving. Please try again.");
+    }
+  }
+
+
 
   return (
     <div
@@ -197,9 +187,9 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onSave, memb
             <div className="flex items-center gap-4">
               <div className="relative">
                 <div className="w-20 h-20 rounded-full border-2 border-border bg-muted overflow-hidden">
-                  {formData.avatarUrl ? (
+                  {formData.avatar ? (
                     <img
-                      src={formData.avatarUrl}
+                      src={preview ?? formData.avatarUrl}
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />
@@ -213,11 +203,10 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onSave, memb
 
               <div className="flex-1">
                 <div
-                  className={`relative border-2 border-dashed rounded-lg p-4 transition-colors ${
-                    isDragOver
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/50 hover:bg-accent/50"
-                  }`}
+                  className={`relative border-2 border-dashed rounded-lg p-4 transition-colors ${isDragOver
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-primary/50 hover:bg-accent/50"
+                    }`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
@@ -330,9 +319,10 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onSave, memb
           <Button variant="outline" onClick={onClose} className="min-w-20">
             Cancel
           </Button>
-          <Button onClick={handleSave} className="min-w-20">
-            {member ? "Update" : "Create"} Member
-          </Button>
+          {member ?
+            <Button onClick={handleEdit} className="min-w-20">Update Member</Button>
+            : <Button onClick={handleSave} className="min-w-20">Create Member</Button>
+          }
         </div>
       </div>
     </div>

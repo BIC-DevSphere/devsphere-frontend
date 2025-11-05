@@ -1,5 +1,7 @@
 import { API_ENDPOINTS } from '@/config/apiConfig';
 import { axiosInstance } from '../axiosInterceptor';
+import { MemberRequest } from '@/types/member.types';
+import { file, string } from 'better-auth/*';
 
 export interface Member {
   id: string;
@@ -28,7 +30,7 @@ export interface MembersResponse {
 export const getAllMembers = async (): Promise<MembersResponse> => {
   try {
     const res = await axiosInstance.get(API_ENDPOINTS.members);
-    console.log(res.data);
+    // console.log(res.data);
     return res.data;
   } catch (error) {
     console.error('Error fetching members:', error);
@@ -37,12 +39,29 @@ export const getAllMembers = async (): Promise<MembersResponse> => {
 };
 
 // TODO: Implement multipart form data handling for avatar upload
-export const createMember = async (memberData: Omit<Member, 'id'>): Promise<Member> => {
+export const createMember = async (memberData: MemberRequest): Promise<Member> => {
   try {
-    const res = await axiosInstance.post(API_ENDPOINTS.members, memberData);
-    return res.data;
+    console.log("Members : ",memberData)
+    const res = await axiosInstance.postForm(API_ENDPOINTS.members ,{
+      name : memberData.name,
+      role : memberData.role,
+      avatar : memberData.avatar,
+      status : memberData.status,
+      year : memberData.year,
+    })
+    console.log(res)
+    return res.data.data;
   } catch (error) {
     console.error('Error creating member:', error);
     throw error;
   }
 };
+
+export const updateMember = async (formData : MemberRequest): Promise<Member> =>{
+  try {
+    const res = await axiosInstance.patch(`${API_ENDPOINTS.members}/:${id}`,formData)
+    return res.data.data
+  } catch (error) {
+    
+  }
+}
