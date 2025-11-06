@@ -1,5 +1,5 @@
 export interface EventSchedule {
-  id: string;
+  id?: string;
   description: string;
   startDate: string;
   endDate: string;
@@ -8,15 +8,15 @@ export interface EventSchedule {
 export interface EventRequest {
   name: string;
   description: string;
-  status: "UPCOMING" | "COMPLETED";
-  eventSchedule?: EventSchedule[];
+  status: 'UPCOMING' | 'COMPLETED';
+  eventSchedule: EventSchedule[];
 }
 
 export interface EventResponse {
   id: string;
   name: string;
   description: string;
-  status: "UPCOMING" | "COMPLETED";
+  status: 'UPCOMING' | 'COMPLETED';
   eventSchedule: EventSchedule[];
   createdAt: string;
   updatedAt: string;
