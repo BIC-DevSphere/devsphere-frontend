@@ -18,9 +18,9 @@ const AdminEvents = () => {
     fetchEvents();
   }, []);
 
-  // if (!events || events.length === 0) {
-  //   return <div className="p-8">Loading events...</div>;
-  // }
+  if (!events || events.length === 0) {
+    return <div className="p-8">Loading events...</div>;
+  }
 
   return (
     <div className="grid py-12 px-8 gap-4">
@@ -32,7 +32,7 @@ const AdminEvents = () => {
 
       <div className="flex flex-wrap gap-x-4 gap-y-12">
         <EventCard 
-        // events={events} 
+        events={events} 
         />
       </div>
     </div>

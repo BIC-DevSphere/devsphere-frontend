@@ -12,13 +12,14 @@ import UserLayout from '@/components/user/UserLayout';
 import AdminLogin from '@/pages/admin/AdminLogin';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminEvents from '@/pages/admin/AdminEvents';
-import AdminEventDetails from "@/pages/admin/AdminEventDetails";
+import AdminEventDetails from '@/pages/admin/AdminEventDetails';
 import AdminMembers from '@/pages/admin/AdminMembers';
 import AdminProjects from '@/pages/admin/AdminProjects';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { useSession } from './lib/authClient';
 import { useEffect } from 'react';
 import AdminProjectEditor from '@/pages/admin/AdminProjectEditor';
+import AdminTags from '@/pages/admin/AdminTags';
 import AdminSettings from './pages/admin/AdminSettings';
 
 const AdminPublicRoute = ({ children }) => {
@@ -91,8 +92,8 @@ const App = () => {
           <Route path="projects" element={<AdminProjects />} />
           <Route path="projects/:id" element={<AdminProjectEditor />} />
           <Route path="projects/new" element={<AdminProjectEditor />} />
+          <Route path="tags" element={<AdminTags />} />
           <Route path="settings" element={<AdminSettings />} />
-
         </Route>
         <Route />
       </Routes>
