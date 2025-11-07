@@ -1,20 +1,23 @@
 import { Input } from '@/components/ui/input';
-import { getAllMembers, MembersResponse, createMember, Member } from '@/services/admin/memberServices';
-import { SearchIcon, PenIcon, TrashIcon , PlusIcon } from 'lucide-react';
+import { getAllMembers, createMember, getMemberById, updateMember } from '@/services/admin/memberServices';
+import { SearchIcon, PenIcon, TrashIcon, PlusIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import MemberModal from '@/components/admin/MemberModal';
-import { memberResponse } from '@/types/member.types';
+import MemberModal, { MemberData } from '@/components/admin/MemberModal';
+import { Member } from '@/types/member.types';
 import { Button } from '@/components/ui/button';
-import { normalizeMemberData , validateMemberData, extractUpdatedMemberFields } from '@/utils/member.utils';
+import { normalizeMemberData, extractUpdatedMemberFields } from '@/utils/member.utils';
+import { useParams } from 'react-router-dom';
+import { normalizeProjectData } from '@/utils/project.utils';
 
 
 const AdminMembers = () => {
-  const [members, setMembers] = useState<MembersResponse | null>(null);
+  const [members, setMembers] = useState<Member[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedMember, setSelectedMember] = useState(null)
+  const [selectedMember, setSelectedMember] = useState<Member>(null)
   const [memberDataSnapshot, setMemberDataSnapshot] = useState<any>(null)
+
 
   useEffect(() => {
     fetchMembers();
@@ -36,13 +39,12 @@ const AdminMembers = () => {
     }
   };
 
-  const handleEdit = (member : memberResponse) => {
+  const handleEdit = (member: Member) => {
     setSelectedMember(member)
     setIsModalOpen(true)
   }
 
   const handleAddMember = () => {
-    setSelectedMember(null);
     setIsModalOpen(true);
   };
 
@@ -51,30 +53,64 @@ const AdminMembers = () => {
     return date.getFullYear();
   };
 
-  const handleEditMember = async (FormData : any) => {
+  const handleEditMember = async (memberData: MemberData) => {
+    try {
+      setIsLoading(true)
+      closeModel()
+      const normalizedPreviousData = normalizeMemberData(memberData)
+      const updatedMemberField = extractUpdatedMemberFields(selectedMember, normalizedPreviousData)
 
+      if (!updatedMemberField || Object.keys(updatedMemberField).length === 0) {
+        toast.error("No changes detected to update")
+        return;
+      }
+
+      try {
+        const data = await updateMember(selectedMember.id, updatedMemberField)
+        console.log("members", members)
+        console.log("data", data)
+
+        setMembers(prevMembers =>
+          prevMembers.map(member =>
+            member.id === data.id ? data : member
+          )
+        );
+
+        toast.success('Member updated successfully');
+      } catch (error) {
+        toast.error("Failed to update member")
+        console.log("Error update member: ", error)
+      }
+
+    } catch (error) {
+      console.log(error)
+      toast.error('Failed to update member');
+    }
+    finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleSaveMember = async (formData : any) => {
+  const handleSaveMember = async (formData: MemberData) => {
     try {
-      setIsModalOpen(false)
       setIsLoading(true)
+      closeModel()
       const data = await createMember(formData);
-        setMembers({
-          ...members,
-          data: [...members.data, data]
-        });
+      setMembers(members ? [...members, data] : [data]);
       toast.success('Member created successfully');
     } catch (error) {
       console.log(error)
       toast.error('Failed to create member');
     }
-    finally{
-      setIsModalOpen(false)
+    finally {
       setIsLoading(false)
     }
   }
 
+  const closeModel = () => {
+    setIsModalOpen(false)
+    setSelectedMember(null)
+  }
 
 
   return (
@@ -86,15 +122,15 @@ const AdminMembers = () => {
           <Input
             placeholder="Search members by name..."
             className="bg-white pl-10 shadow-sm"
-            // value={searchQuery}
-            // onChange={(e) => setSearchQuery(e.target.value)}
+          // value={searchQuery}
+          // onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         <div className="create-member-button">
-        <Button className="flex items-center gap-2 shadow-md" onClick={handleAddMember}>
-          <PlusIcon className="h-4 w-4" />
-          Add New Member
-        </Button>
+          <Button className="flex items-center gap-2 shadow-md" onClick={handleAddMember}>
+            <PlusIcon className="h-4 w-4" />
+            Add New Member
+          </Button>
         </div>
       </div>
 
@@ -106,8 +142,8 @@ const AdminMembers = () => {
               <p className="text-gray-600">Loading members...</p>
             </div>
           </div>
-        ) : members.data && members.data.length > 0 ? (
-          members.data.map((member) => (
+        ) : members && members.length > 0 ? (
+          members.map((member) => (
             <div
               key={member.id}
               className="flex overflow-hidden rounded-lg border-1 border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md max-h-28"
@@ -117,7 +153,7 @@ const AdminMembers = () => {
                   <img
                     src={member.avatarUrl}
                     alt={member.name}
-                    className="h-full w-full object-fill"
+                    className="h-full w-full object-cover"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-blue-400 to-purple-500 text-white">
@@ -153,9 +189,8 @@ const AdminMembers = () => {
                   <span className="text-xs text-gray-500">Joined {getYear(member.year)}</span>
                   <div className="flex items-center gap-1">
                     <div
-                      className={`h-2 w-2 rounded-full ${
-                        member.status === 'ACTIVE' ? 'bg-green-400' : 'bg-gray-400'
-                      }`}
+                      className={`h-2 w-2 rounded-full ${member.status === 'ACTIVE' ? 'bg-green-400' : 'bg-gray-400'
+                        }`}
                     />
                     <span className="text-xs font-medium text-gray-600">
                       {member.status.toLowerCase()}
@@ -172,12 +207,12 @@ const AdminMembers = () => {
         )}
       </div>
       <MemberModal
-    isOpen={isModalOpen}
-    onClose={() => setIsModalOpen(false)}
-    onEdit={handleEditMember}
-    onSave={handleSaveMember}
-    member={selectedMember}
-/>
+        isOpen={isModalOpen}
+        onClose={closeModel}
+        onEdit={handleEditMember}
+        onSave={handleSaveMember}
+        member={selectedMember}
+      />
 
     </div>
   );

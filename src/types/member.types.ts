@@ -6,10 +6,11 @@ export interface MemberRequest {
   avatar?: File;
 }
 
-export interface memberResponse {
+export interface  Member {
+    id : string;
     name : string;
     role : string;
     status : "ACTIVE" | "INACTIVE"
     year : string;
-    avatarUrl : string;
+    avatarUrl : string | null;
 }
