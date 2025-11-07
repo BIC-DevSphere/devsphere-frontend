@@ -258,40 +258,45 @@ const AdminEventEditor = () => {
             "description-bottom thumbnail-bottom"
           `,
           gridTemplateColumns: '7fr 3fr',
+          gridTemplateRows: 'minmax(400px, max-content) auto',
         }}
       >
         <Card
-          className="event-input-left border-border bg-card border-1 p-6 shadow-md"
+          className="event-input-left border-border bg-card flex flex-col border-1 p-6 shadow-md"
           style={{ gridArea: 'left' }}
         >
           <div className="event-input-left-header border-border mb-6 border-b pb-4">
             <h1 className="text-2xl font-bold">Event Details</h1>
           </div>
 
-          <EventBasicInfo
-            name={createEventData.name}
-            status={createEventData.status}
-            isViewMode={isViewMode}
-            errors={formErrors}
-            onChange={handleInputChange}
-            onStatusChange={handleStatusChange}
-          />
+          <div className="flex-1">
+            <EventBasicInfo
+              name={createEventData.name}
+              status={createEventData.status}
+              isViewMode={isViewMode}
+              errors={formErrors}
+              onChange={handleInputChange}
+              onStatusChange={handleStatusChange}
+            />
+          </div>
         </Card>
 
         <div className="event-input-right flex flex-col gap-4" style={{ gridArea: 'right' }}>
-          <Card className="event-schedule-card border-border bg-card border-1 p-6 shadow-md">
+          <Card className="event-schedule-card border-border bg-card flex h-full flex-col border-1 p-6 shadow-md">
             <div className="event-schedule-header border-border mb-4 border-b pb-4">
               <h1 className="text-xl font-bold">Schedules</h1>
               <p className="text-muted-foreground mt-1 text-xs">Manage event timeline</p>
             </div>
-            <EventScheduleManager
-              schedules={createEventData.eventSchedule}
-              isViewMode={isViewMode}
-              errors={formErrors}
-              onAddSchedule={handleAddSchedule}
-              onUpdateSchedule={handleUpdateSchedule}
-              onRemoveSchedule={handleRemoveSchedule}
-            />
+            <div className="flex-1">
+              <EventScheduleManager
+                schedules={createEventData.eventSchedule}
+                isViewMode={isViewMode}
+                errors={formErrors}
+                onAddSchedule={handleAddSchedule}
+                onUpdateSchedule={handleUpdateSchedule}
+                onRemoveSchedule={handleRemoveSchedule}
+              />
+            </div>
           </Card>
         </div>
 
@@ -310,16 +315,18 @@ const AdminEventEditor = () => {
         </Card>
 
         <Card
-          className="event-thumbnail-card border-border bg-card border-1 p-6 shadow-md"
+          className="event-thumbnail-card border-border bg-card flex min-h-[475px] flex-col border-1 p-6 shadow-md"
           style={{ gridArea: 'thumbnail-bottom' }}
         >
-          <ThumbnailUpload
-            thumbnail={createEventData.thumbnail}
-            thumbnailUrl={fetchedEventInfo?.thumbnailUrl}
-            isViewMode={isViewMode}
-            onChange={handleInputChange}
-            onRemove={removeThumbnail}
-          />
+          <div className="flex flex-1 flex-col">
+            <ThumbnailUpload
+              thumbnail={createEventData.thumbnail}
+              thumbnailUrl={fetchedEventInfo?.thumbnailUrl}
+              isViewMode={isViewMode}
+              onChange={handleInputChange}
+              onRemove={removeThumbnail}
+            />
+          </div>
         </Card>
       </div>
     </div>
