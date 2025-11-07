@@ -26,6 +26,20 @@ const parseDescription = (description: string | null | undefined): string => {
   return description;
 };
 
+/**
+ * Maps event images to thumbnailUrl for backward compatibility
+ */
+const mapEventResponse = (event: EventResponse): EventResponse => {
+  const thumbnailUrl =
+    event.images?.find((img) => img.imageType === 'PROMOTIONAL')?.imageUrl || event.thumbnailUrl;
+
+  return {
+    ...event,
+    description: parseDescription(event.description),
+    thumbnailUrl,
+  };
+};
+
 export const getAllEvents = async (): Promise<EventResponse[]> => {
   try {
     const res = await axiosInstance.get(API_ENDPOINTS.events);
@@ -33,11 +47,8 @@ export const getAllEvents = async (): Promise<EventResponse[]> => {
       throw new Error('Failed to fetch events');
     }
 
-    // Parse descriptions in all events
-    return res.data.data.map((event: EventResponse) => ({
-      ...event,
-      description: parseDescription(event.description),
-    }));
+    // Parse descriptions and map images in all events
+    return res.data.data.map((event: EventResponse) => mapEventResponse(event));
   } catch (err) {
     throw err;
   }
@@ -50,12 +61,9 @@ export const getEventById = async (id: string): Promise<EventResponse> => {
       throw new Error('Failed to fetch event');
     }
 
-    // Parse description
+    // Parse description and map images
     const event = res.data.data;
-    return {
-      ...event,
-      description: parseDescription(event.description),
-    };
+    return mapEventResponse(event);
   } catch (err) {
     throw err;
   }
@@ -63,20 +71,29 @@ export const getEventById = async (id: string): Promise<EventResponse> => {
 
 export const createEvent = async (eventData: EventRequest): Promise<EventResponse> => {
   try {
-    console.log('Creating event with data: ', eventData);
-    const res = await axiosInstance.postForm(API_ENDPOINTS.events, {
-      eventData: JSON.stringify(eventData),
-    });
+    const formData = {
+      name: eventData.name,
+      description: eventData.description,
+      status: eventData.status,
+      eventSchedule: eventData.eventSchedule,
+      images: eventData.thumbnail ? [{ imageType: 'PROMOTIONAL' }] : [],
+    };
 
+    const payload: any = {
+      eventData: JSON.stringify(formData),
+    };
+
+    if (eventData.thumbnail) {
+      payload.imageFiles = eventData.thumbnail;
+    }
+
+    const res = await axiosInstance.postForm(API_ENDPOINTS.events, payload);
     if (!res) {
       throw new Error('Failed to create event');
     }
 
     const event = res.data.data;
-    return {
-      ...event,
-      description: parseDescription(event.description),
-    };
+    return mapEventResponse(event);
   } catch (error) {
     throw error;
   }
@@ -87,52 +104,43 @@ export const updateEvent = async (
   eventDataUpdates: Partial<EventRequest>
 ): Promise<EventResponse> => {
   try {
-    // Fetch current event data
     const currentEvent = await getEventById(eventId);
 
-    // Process event schedules to ensure proper structure
     let processedSchedules = eventDataUpdates.eventSchedule;
-
     if (eventDataUpdates.eventSchedule) {
-      // Clean up schedules: remove temporary client-side IDs if they exist
       processedSchedules = eventDataUpdates.eventSchedule.map((schedule) => {
-        // If the schedule has an id that's a valid UUID (from server), keep it
-        // If it's a new schedule (no id or temporary id), remove the id field
         if (schedule.id && schedule.id.includes('-') && schedule.id.length === 36) {
-          // Looks like a valid UUID from the server
           return schedule;
         }
-        // New schedule - remove id field so backend treats it as new
         const { id, ...scheduleWithoutId } = schedule;
         return scheduleWithoutId;
       });
     }
 
-    // Merge current data with updates
-    const mergedEventData = {
-      ...currentEvent,
-      ...eventDataUpdates,
-      ...(processedSchedules && { eventSchedule: processedSchedules }),
+    const mergedData = {
+      name: eventDataUpdates.name ?? currentEvent.name,
+      description: eventDataUpdates.description ?? currentEvent.description,
+      status: eventDataUpdates.status ?? currentEvent.status,
+      eventSchedule: processedSchedules ?? currentEvent.eventSchedule,
+      images: eventDataUpdates.thumbnail ? [{ imageType: 'PROMOTIONAL' }] : [],
     };
 
-    const stringifiedData = JSON.stringify(mergedEventData);
+    const payload: any = {
+      eventData: JSON.stringify(mergedData),
+    };
 
-    const res = await axiosInstance.patchForm(`${API_ENDPOINTS.events}/${eventId}`, {
-      eventData: stringifiedData,
-    });
+    if (eventDataUpdates.thumbnail) {
+      payload.imageFiles = eventDataUpdates.thumbnail;
+    }
 
+    const res = await axiosInstance.patchForm(`${API_ENDPOINTS.events}/${eventId}`, payload);
     if (!res || res.status !== 200) {
       throw new Error('Failed to update event');
     }
 
     const event = res.data.data;
-    return {
-      ...event,
-      description: parseDescription(event.description),
-    };
+    return mapEventResponse(event);
   } catch (error) {
-    console.error('Update error:', error);
-    console.error('Error response:', error.response?.data);
     throw error;
   }
 };

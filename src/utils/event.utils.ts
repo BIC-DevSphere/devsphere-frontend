@@ -32,6 +32,7 @@ export const normalizeEventData = (data: any) => {
           endDate: schedule.endDate,
         })) || [],
       description: parsedDescription, // Store as object, not string
+      thumbnail: null, // Initialize thumbnail as null for form
     };
     return normalizedData;
   } catch (error) {
@@ -46,6 +47,7 @@ export const validateEventData = (data: any) => {
     status: '',
     eventSchedule: '',
     description: '',
+    thumbnail: '',
   };
 
   if (!data.name.trim()) {
@@ -93,6 +95,12 @@ export const extractUpdatedEventFields = (eventDataSnapshot: any, eventUploadDat
           const stringVal = val as string;
           // Compare parsed description object with new string value
           if (isEditorJSContentChanged(dataFromSnapshot, stringVal)) {
+            return [key, val];
+          }
+          return null;
+        } else if (key === 'thumbnail') {
+          // Always include thumbnail if it exists (new file uploaded)
+          if (val !== null && val !== undefined) {
             return [key, val];
           }
           return null;

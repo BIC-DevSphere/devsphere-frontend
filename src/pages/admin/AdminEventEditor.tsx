@@ -14,6 +14,7 @@ import { useEventForm } from '@/hooks/useEventForm';
 import { useEditorJs } from '@/hooks/useEditorJs';
 import { EventBasicInfo } from '@/components/admin/EventBasicInfo';
 import { EventScheduleManager } from '@/components/admin/EventScheduleManager';
+import { ThumbnailUpload } from '@/components/admin/ThumbnailUpload';
 import {
   extractUpdatedEventFields,
   normalizeEventData,
@@ -37,6 +38,7 @@ const AdminEventEditor = () => {
     handleAddSchedule,
     handleUpdateSchedule,
     handleRemoveSchedule,
+    removeThumbnail,
     formErrors,
     setFormErrors,
   } = useEventForm();
@@ -189,7 +191,6 @@ const AdminEventEditor = () => {
 
   return (
     <div className="create-event-container p-8">
-      {/* ...existing header code... */}
       <div className="create-event-header">
         <Button
           variant="outline"
@@ -249,13 +250,12 @@ const AdminEventEditor = () => {
         </div>
       </div>
 
-      {/* ...rest of your existing grid layout... */}
       <div
         className="create-event-body mt-8 grid gap-4"
         style={{
           gridTemplateAreas: `
             "left right"
-            "bottom bottom"
+            "description-bottom thumbnail-bottom"
           `,
           gridTemplateColumns: '7fr 3fr',
         }}
@@ -278,27 +278,26 @@ const AdminEventEditor = () => {
           />
         </Card>
 
-        <Card
-          className="event-input-right border-border bg-card border-1 p-6 shadow-md"
-          style={{ gridArea: 'right' }}
-        >
-          <div className="event-schedule-header border-border mb-4 border-b pb-4">
-            <h1 className="text-xl font-bold">Schedules</h1>
-            <p className="text-muted-foreground mt-1 text-xs">Manage event timeline</p>
-          </div>
-          <EventScheduleManager
-            schedules={createEventData.eventSchedule}
-            isViewMode={isViewMode}
-            errors={formErrors}
-            onAddSchedule={handleAddSchedule}
-            onUpdateSchedule={handleUpdateSchedule}
-            onRemoveSchedule={handleRemoveSchedule}
-          />
-        </Card>
+        <div className="event-input-right flex flex-col gap-4" style={{ gridArea: 'right' }}>
+          <Card className="event-schedule-card border-border bg-card border-1 p-6 shadow-md">
+            <div className="event-schedule-header border-border mb-4 border-b pb-4">
+              <h1 className="text-xl font-bold">Schedules</h1>
+              <p className="text-muted-foreground mt-1 text-xs">Manage event timeline</p>
+            </div>
+            <EventScheduleManager
+              schedules={createEventData.eventSchedule}
+              isViewMode={isViewMode}
+              errors={formErrors}
+              onAddSchedule={handleAddSchedule}
+              onUpdateSchedule={handleUpdateSchedule}
+              onRemoveSchedule={handleRemoveSchedule}
+            />
+          </Card>
+        </div>
 
         <Card
-          className="event-input-bottom border-border bg-card mt-4 h-auto min-h-40 w-full border-1 p-6 shadow-md"
-          style={{ gridArea: 'bottom' }}
+          className="event-input-bottom border-border bg-card h-auto min-h-40 w-full border-1 p-6 shadow-md"
+          style={{ gridArea: 'description-bottom' }}
         >
           <div className="event-description-header">
             <h2 className="border-border mb-6 border-b pb-4 text-2xl font-bold">
@@ -308,6 +307,19 @@ const AdminEventEditor = () => {
           <div className="event-description-input">
             <div id="editorjs" ref={editorHolder} />
           </div>
+        </Card>
+
+        <Card
+          className="event-thumbnail-card border-border bg-card border-1 p-6 shadow-md"
+          style={{ gridArea: 'thumbnail-bottom' }}
+        >
+          <ThumbnailUpload
+            thumbnail={createEventData.thumbnail}
+            thumbnailUrl={fetchedEventInfo?.thumbnailUrl}
+            isViewMode={isViewMode}
+            onChange={handleInputChange}
+            onRemove={removeThumbnail}
+          />
         </Card>
       </div>
     </div>

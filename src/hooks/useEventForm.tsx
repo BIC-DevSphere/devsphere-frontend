@@ -7,6 +7,7 @@ export const useEventForm = () => {
     description: '',
     status: 'UPCOMING' as 'UPCOMING' | 'COMPLETED',
     eventSchedule: [] as EventSchedule[],
+    thumbnail: null as File | null,
   });
 
   const [formErrors, setFormErrors] = useState({
@@ -14,14 +15,17 @@ export const useEventForm = () => {
     description: '',
     status: '',
     eventSchedule: '',
+    thumbnail: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+    const { name, type, value } = e.target;
+    const target = e.target as HTMLInputElement;
+    const files = target.files;
 
     setCreateEventData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: type === 'file' ? (files?.[0] ?? null) : value,
     }));
     setFormErrors((prevErrors) => ({
       ...prevErrors,
@@ -65,6 +69,13 @@ export const useEventForm = () => {
     }));
   };
 
+  const removeThumbnail = () => {
+    setCreateEventData((prevData) => ({
+      ...prevData,
+      thumbnail: null,
+    }));
+  };
+
   return {
     createEventData,
     setCreateEventData,
@@ -73,6 +84,7 @@ export const useEventForm = () => {
     handleAddSchedule,
     handleUpdateSchedule,
     handleRemoveSchedule,
+    removeThumbnail,
     formErrors,
     setFormErrors,
   };
