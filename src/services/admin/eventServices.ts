@@ -61,9 +61,17 @@ export const getEventById = async (id: string): Promise<EventResponse> => {
       throw new Error('Failed to fetch event');
     }
 
-    // Parse description and map images
+    // Map images but keep description as raw JSON for editor
     const event = res.data.data;
-    return mapEventResponse(event);
+    const thumbnailUrl =
+      event.images?.find((img: any) => img.imageType === 'PROMOTIONAL')?.imageUrl ||
+      event.thumbnailUrl;
+
+    return {
+      ...event,
+      thumbnailUrl,
+      // Keep description as raw string - will be parsed by AdminEventEditor
+    };
   } catch (err) {
     throw err;
   }
@@ -104,11 +112,14 @@ export const updateEvent = async (
   eventDataUpdates: Partial<EventRequest>
 ): Promise<EventResponse> => {
   try {
+    // Get current event to merge with updates
     const currentEvent = await getEventById(eventId);
 
+    // Process schedules - remove temp IDs for new schedules
     let processedSchedules = eventDataUpdates.eventSchedule;
     if (eventDataUpdates.eventSchedule) {
       processedSchedules = eventDataUpdates.eventSchedule.map((schedule) => {
+        // Keep real UUIDs (existing schedules), remove temp IDs (new schedules)
         if (schedule.id && schedule.id.includes('-') && schedule.id.length === 36) {
           return schedule;
         }
@@ -122,7 +133,9 @@ export const updateEvent = async (
       description: eventDataUpdates.description ?? currentEvent.description,
       status: eventDataUpdates.status ?? currentEvent.status,
       eventSchedule: processedSchedules ?? currentEvent.eventSchedule,
-      images: eventDataUpdates.thumbnail ? [{ imageType: 'PROMOTIONAL' }] : [],
+      images: eventDataUpdates.thumbnail
+        ? [{ imageType: 'PROMOTIONAL' }]
+        : (currentEvent.images ?? []),
     };
 
     const payload: any = {

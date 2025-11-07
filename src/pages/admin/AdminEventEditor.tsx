@@ -315,7 +315,7 @@ const AdminEventEditor = () => {
         </Card>
 
         <Card
-          className="event-thumbnail-card border-border bg-card flex min-h-[475px] flex-col border-1 p-6 shadow-md"
+          className="event-thumbnail-card border-border bg-card flex min-h-[500px] flex-col border-1 p-6 shadow-md"
           style={{ gridArea: 'thumbnail-bottom' }}
         >
           <div className="flex flex-1 flex-col">

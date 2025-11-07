@@ -70,9 +70,21 @@ const isEditorJSContentChanged = (original: any, updated: string): boolean => {
       typeof original === 'string' ? JSON.parse(original).blocks : original?.blocks;
     const updatedData = JSON.parse(updated);
 
-    // Compare blocks content, ignoring time field
-    return JSON.stringify(originalBlocks) !== JSON.stringify(updatedData.blocks);
+    // Normalize blocks by removing IDs and version info that EditorJS auto-generates
+    const normalizeBlocks = (blocks: any[]) => {
+      return blocks.map((block: any) => ({
+        type: block.type,
+        data: block.data,
+      }));
+    };
+
+    const normalizedOriginal = normalizeBlocks(originalBlocks || []);
+    const normalizedUpdated = normalizeBlocks(updatedData.blocks || []);
+
+    // Compare normalized blocks content, ignoring time, id, and version fields
+    return JSON.stringify(normalizedOriginal) !== JSON.stringify(normalizedUpdated);
   } catch (error) {
+    console.error('Error comparing editor content:', error);
     return true; // If there's an error, consider it changed
   }
 };
@@ -99,8 +111,8 @@ export const extractUpdatedEventFields = (eventDataSnapshot: any, eventUploadDat
           }
           return null;
         } else if (key === 'thumbnail') {
-          // Always include thumbnail if it exists (new file uploaded)
-          if (val !== null && val !== undefined) {
+          // Only include thumbnail if a new file was actually uploaded
+          if (val !== null && val !== undefined && val instanceof File) {
             return [key, val];
           }
           return null;
@@ -113,6 +125,8 @@ export const extractUpdatedEventFields = (eventDataSnapshot: any, eventUploadDat
         }
       })
       .filter((entry): entry is [string, any] => entry !== null);
+
+    console.log('Event changes detected:', changes);
 
     if (changes.length === 0) return null;
 
