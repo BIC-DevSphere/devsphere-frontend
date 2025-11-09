@@ -4,22 +4,15 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { X, Upload, User } from "lucide-react";
+import { useMemberForm } from "@/hooks/useMemberForm";
 
-interface MemberData {
+export interface MemberData {
   name: string;
   role: string;
   year: string;
   status: "ACTIVE" | "INACTIVE";
   avatar?: File;
   avatarUrl?: string;
-}
-
-interface FormErrors {
-  name?: string;
-  role?: string;
-  year?: string;
-  status?: string;
-  avatar?: string;
 }
 
 interface MemberModalProps {
@@ -31,76 +24,49 @@ interface MemberModalProps {
 }
 
 const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSave, member }) => {
-  const [formData, setFormData] = useState<MemberData>({
-    name: "",
-    role: "",
-    year: new Date().toISOString().split("T")[0],
-    status: "ACTIVE",
-    avatar: null,
-    avatarUrl: "",
-  });
+  const {
+    createMemberData: formData,
+    setMemberData,
+    handleInputChange,
+    handleStatusChange,
+    handleAvatarChange,
+    removeAvatar,
+    validateForm,
+    resetForm,
+    formErrors: errors,
+  } = useMemberForm();
 
-  const [errors, setErrors] = useState<FormErrors>({});
   const [isDragOver, setIsDragOver] = useState(false);
   const [preview, setPreview] = useState<string>("")
 
   useEffect(() => {
     if (member) {
-      setFormData({
-        name: member.name,
-        role: member.role,
-        year: new Date(member.year).toISOString().split("T")[0],
-        status: member.status,
-        avatarUrl: member.avatarUrl,
-      });
+      setMemberData(member);
+      if (member.avatarUrl) {
+        setPreview(member.avatarUrl);
+      }
     } else {
-      setFormData({
-        name: "",
-        role: "",
-        year: new Date().toISOString().split("T")[0],
-        status: "ACTIVE",
-        avatar: null,
-      });
+      resetForm();
+      setPreview("");
     }
-    setErrors({});
-  }, [member, isOpen]);
+  }, [member, isOpen, setMemberData, resetForm]);
 
   if (!isOpen) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
-    }
+    handleInputChange(e);
   };
 
-  const handleStatusChange = (value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      status: value as "ACTIVE" | "INACTIVE",
-    }));
+  const handleStatusChangeWrapper = (value: string) => {
+    handleStatusChange(value as "ACTIVE" | "INACTIVE");
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!file.type.startsWith("image/")) {
-        alert("Please select a valid image file");
-        return;
-      }
-
-      if (file.size > 5 * 1024 * 1024) {
-        alert("Image size should be less than 5MB");
-        return;
-      }
       const blobUrl = URL.createObjectURL(file);
       setPreview(blobUrl);
-      setFormData((prev) => ({ ...prev, avatar: file }));
+      handleAvatarChange(file);
     }
   };
 
@@ -127,12 +93,14 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
       }
       const blobUrl = URL.createObjectURL(file);
       setPreview(blobUrl);
-
-      setFormData((prev) => ({ ...prev, avatar: file }));
+      handleAvatarChange(file);
     }
   };
 
   const handleSave = () => {
+    if (!validateForm()) {
+      return;
+    }
     try {
       onSave(formData);
     } catch (error) {
@@ -142,6 +110,9 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
   }
 
   const handleEdit = () => {
+    if (!validateForm()) {
+      return;
+    }
     try {
       onEdit(formData)
     } catch (error) {
@@ -187,7 +158,7 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
             <div className="flex items-center gap-4">
               <div className="relative">
                 <div className="w-20 h-20 rounded-full border-2 border-border bg-muted overflow-hidden">
-                  {formData.avatar ? (
+                  {preview ? (
                     <img
                       src={preview ?? formData.avatarUrl}
                       alt="Profile"
@@ -290,7 +261,7 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-foreground">Status</Label>
-                <Select value={formData.status} onValueChange={handleStatusChange}>
+                <Select value={formData.status} onValueChange={handleStatusChangeWrapper}>
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
