@@ -1,7 +1,8 @@
+import EventUserCard from "@/components/EventUserCard"
 
 const UserEvents = () => {
   return (
-    <div>UserEvents</div>
+    <EventUserCard />
   )
 }
 
