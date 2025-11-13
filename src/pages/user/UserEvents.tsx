@@ -1,4 +1,4 @@
-import EventUserCard from "@/components/EventUserCard"
+import EventUserCard from "@/components/user/EventUserCard"
 
 const UserEvents = () => {
   return (
