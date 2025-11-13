@@ -1,14 +1,14 @@
 import { Calendar, MapPin, Users } from "lucide-react";
 import { Button } from "./ui/button";
 
-const EventUserCard = () => {
+const UpcomingEventUserCard = () => {
   return (
     <div className="w-full h-88 bg-white rounded-2xl shadow-xl overflow-hidden flex hover:shadow-2xl transition-all duration-300">
       {/* Left Image Section */}
       <div className="relative w-1/3 h-full p-4">
         <img
           src="https://placehold.co/600x400/000000/FFF"
-          alt="Event"
+          alt="Upcoming Event Image"
           className="h-full w-full object-cover rounded-2xl"
         />
 
@@ -64,4 +64,4 @@ const EventUserCard = () => {
   );
 };
 
-export default EventUserCard;
+export default UpcomingEventUserCard;
