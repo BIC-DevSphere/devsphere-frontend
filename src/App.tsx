@@ -12,7 +12,7 @@ import UserLayout from '@/components/user/UserLayout';
 import AdminLogin from '@/pages/admin/AdminLogin';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminEvents from '@/pages/admin/AdminEvents';
-import AdminEventDetails from '@/pages/admin/AdminEventDetails';
+import AdminEventEditor from '@/pages/admin/AdminEventEditor';
 import AdminMembers from '@/pages/admin/AdminMembers';
 import AdminProjects from '@/pages/admin/AdminProjects';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -87,7 +87,8 @@ const App = () => {
         >
           <Route index element={<AdminDashboard />} />
           <Route path="events" element={<AdminEvents />} />
-          <Route path="events/:id" element={<AdminEventDetails />} />
+          <Route path="events/new" element={<AdminEventEditor />} />
+          <Route path="events/:id" element={<AdminEventEditor />} />
           <Route path="members" element={<AdminMembers />} />
           <Route path="projects" element={<AdminProjects />} />
           <Route path="projects/:id" element={<AdminProjectEditor />} />

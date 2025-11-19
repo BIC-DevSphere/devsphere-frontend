@@ -1,25 +1,36 @@
 export interface EventSchedule {
-  id: string;
+  id?: string;
   description: string;
   startDate: string;
   endDate: string;
 }
 
+export interface EventImage {
+  id?: string;
+  imageUrl?: string;
+  imageType: 'PROMOTIONAL' | 'GALLERY' | 'GUESTS';
+  publicId?: string;
+  uploadedAt?: string;
+}
+
 export interface EventRequest {
   name: string;
   description: string;
-  status: "UPCOMING" | "COMPLETED";
-  eventSchedule?: EventSchedule[];
+  status: 'UPCOMING' | 'COMPLETED';
+  eventSchedule: EventSchedule[];
+  thumbnail?: File | null;
 }
 
 export interface EventResponse {
   id: string;
   name: string;
   description: string;
-  status: "UPCOMING" | "COMPLETED";
+  status: 'UPCOMING' | 'COMPLETED';
   eventSchedule: EventSchedule[];
-  createdAt: string;
-  updatedAt: string;
+  images?: EventImage[];
+  thumbnailUrl?: string; // Keep for backward compatibility
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Pagination {
