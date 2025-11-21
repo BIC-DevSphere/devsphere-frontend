@@ -1,6 +1,6 @@
 import { Input } from '@/components/ui/input';
 import { getAllMembers, createMember, getMemberById, updateMember } from '@/services/admin/memberServices';
-import { SearchIcon, PenIcon, TrashIcon, PlusIcon } from 'lucide-react';
+import { SearchIcon, PenIcon, TrashIcon, PlusIcon, FilterIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import MemberModal, { MemberData } from '@/components/admin/MemberModal';
@@ -17,6 +17,8 @@ const AdminMembers = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedMember, setSelectedMember] = useState<Member>(null)
   const [memberDataSnapshot, setMemberDataSnapshot] = useState<any>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all')
 
 
   useEffect(() => {
@@ -42,6 +44,11 @@ const AdminMembers = () => {
   const handleEdit = (member: Member) => {
     setSelectedMember(member)
     setIsModalOpen(true)
+  }
+
+  const handleDelete = (member :Member) => {
+    const newMembers = members.filter(m => m.id != member.id)
+    setMembers(newMembers)
   }
 
   const handleAddMember = () => {
@@ -112,21 +119,70 @@ const AdminMembers = () => {
     setSelectedMember(null)
   }
 
+  // Filter members based on search query and status
+  const filteredMembers = members?.filter(member => {
+    const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase())
+    let matchesStatus = true
+    if (filterStatus === 'active') {
+      matchesStatus = member.status === 'ACTIVE'
+    } else if (filterStatus === 'inactive') {
+      matchesStatus = member.status !== 'ACTIVE'
+    }
+    return matchesSearch && matchesStatus
+  }) || []
+
 
   return (
     <div className="grid gap-4 px-8 py-12">
       <p className="text-4xl font-semibold">Members</p>
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative mt-2 max-w-md flex-1">
-          <SearchIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-          <Input
-            placeholder="Search members by name..."
-            className="bg-white pl-10 shadow-sm"
-          // value={searchQuery}
-          // onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        <div className="flex-1 space-y-3">
+          <div className="relative max-w-md">
+            <SearchIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <Input
+              placeholder="Search members by name..."
+              className="bg-white pl-10 shadow-sm"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <FilterIcon className="h-4 w-4 text-gray-500" />
+            <span className="text-sm text-gray-600 font-medium">Filter:</span>
+            <div className="flex gap-2">
+              <Button
+                variant={filterStatus === 'active' ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterStatus(filterStatus === 'active' ? 'all' : 'active')}
+                className={`transition-all duration-200 ${
+                  filterStatus === 'active'
+                    ? "bg-green-500 hover:bg-green-600 text-white shadow-md" 
+                    : "border-gray-300 hover:bg-gray-50 hover:border-green-300"
+                }`}
+              >
+                Active
+              </Button>
+              <Button
+                variant={filterStatus === 'inactive' ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterStatus(filterStatus === 'inactive' ? 'all' : 'inactive')}
+                className={`transition-all duration-200 ${
+                  filterStatus === 'inactive'
+                    ? "bg-red-500 hover:bg-red-600 text-white shadow-md"
+                    : "border-gray-300 hover:bg-gray-50 hover:border-red-300"
+                }`}
+              >
+                Inactive
+              </Button>
+            </div>
+            {filterStatus !== 'all' && (
+              <span className="text-sm text-gray-500">
+                ({filteredMembers.length} {filterStatus})
+              </span>
+            )}
+          </div>
         </div>
-        <div className="create-member-button">
+        <div className="create-member-Button ">
           <Button className="flex items-center gap-2 shadow-md" onClick={handleAddMember}>
             <PlusIcon className="h-4 w-4" />
             Add New Member
@@ -142,8 +198,8 @@ const AdminMembers = () => {
               <p className="text-gray-600">Loading members...</p>
             </div>
           </div>
-        ) : members && members.length > 0 ? (
-          members.map((member) => (
+        ) : filteredMembers && filteredMembers.length > 0 ? (
+          filteredMembers.map((member) => (
             <div
               key={member.id}
               className="flex overflow-hidden rounded-lg border-1 border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md max-h-28"
@@ -175,12 +231,9 @@ const AdminMembers = () => {
                     <p className="truncate text-xs text-gray-600">{member.role}</p>
                   </div>
                   <div className="member-card-action-section flex gap-2">
-                    <button onClick={() => handleEdit(member)} className="cursor-pointer rounded-md bg-gray-200 p-1.5 text-gray-500 hover:text-gray-700">
+                    <Button  onClick={() => handleEdit(member)} className="cursor-pointer rounded-md bg-gray-200 p-1.5 text-gray-500 hover:text-gray-700">
                       <PenIcon size={16} />
-                    </button>
-                    <button className="cursor-pointer rounded-md bg-red-200 p-1.5 text-red-600 shadow-md">
-                      <TrashIcon size={16} />
-                    </button>
+                    </Button >
                   </div>
                 </div>
 
@@ -202,7 +255,28 @@ const AdminMembers = () => {
           ))
         ) : (
           <div className="flex min-h-[400px] w-full items-center justify-center">
-            <p className="text-gray-600">No members found.</p>
+            <div className="text-center">
+              <p className="text-gray-600">
+                {members && members.length > 0 
+                  ? (searchQuery || filterStatus !== 'all'
+                      ? `No members found matching ${searchQuery ? `"${searchQuery}"` : ''} ${filterStatus !== 'all' ? `${filterStatus} filter` : ''}`.trim()
+                      : 'No members found.')
+                  : 'No members found.'}
+              </p>
+              {(searchQuery || filterStatus !== 'all') && members && members.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery('')
+                    setFilterStatus('all')
+                  }}
+                  className="mt-2 text-blue-500 hover:text-blue-600"
+                >
+                  Clear filters
+                </Button>
+              )}
+            </div>
           </div>
         )}
       </div>
