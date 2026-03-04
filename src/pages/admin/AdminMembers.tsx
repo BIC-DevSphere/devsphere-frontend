@@ -64,11 +64,11 @@ const AdminMembers = () => {
     try {
       setIsSaving(true);
       const normalizedData = normalizeMemberData(memberData);
+      if (!normalizedData) {
+        toast.error('Invalid member data');
+        return;
+      }
       const updatedFields = extractUpdatedMemberFields(currentMember, normalizedData);
-
-      console.log('Original member:', currentMember);
-      console.log('Normalized form data:', normalizedData);
-      console.log('Fields to update:', updatedFields);
 
       if (!updatedFields || Object.keys(updatedFields).length === 0) {
         toast.error('No changes detected to update');

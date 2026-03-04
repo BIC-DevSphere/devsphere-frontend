@@ -50,7 +50,7 @@ export const extractUpdatedMemberFields = (
             const newValue = normalizedVal || null;
             
             if (snapshotValue !== newValue) {
-              return [key, newValue ?? ''];
+              return [key, newValue];
             }
             return null;
           }
