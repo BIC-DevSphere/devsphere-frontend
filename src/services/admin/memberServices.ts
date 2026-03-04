@@ -25,18 +25,21 @@ export const getAllMembers = async (): Promise<Member[]> => {
   }
 };
 
-// TODO: Implement multipart form data handling for avatar upload
 export const createMember = async (memberData: MemberRequest): Promise<Member> => {
   try {
-    console.log("Members : ", memberData)
-    const res = await axiosInstance.postForm(API_ENDPOINTS.members, {
+    const payload: Record<string, any> = {
       name: memberData.name,
       role: memberData.role,
-      avatar: memberData.avatar,
       status: memberData.status,
       year: memberData.year,
-    })
-    console.log(res)
+    };
+
+    if (memberData.avatar) payload.avatar = memberData.avatar;
+    if (memberData.discordUrl) payload.discordUrl = memberData.discordUrl;
+    if (memberData.instagramUrl) payload.instagramUrl = memberData.instagramUrl;
+    if (memberData.linkedinUrl) payload.linkedinUrl = memberData.linkedinUrl;
+
+    const res = await axiosInstance.postForm(API_ENDPOINTS.members, payload);
     return res.data.data;
   } catch (error) {
     console.error('Error creating member:', error);
@@ -46,7 +49,14 @@ export const createMember = async (memberData: MemberRequest): Promise<Member> =
 
 export const updateMember = async (memberId: string, memberData: Partial<MemberRequest>): Promise<Member> => {
   try {
-    const res = await axiosInstance.patchForm(`${API_ENDPOINTS.members}/${memberId}`, memberData);
+    let res;
+    
+
+    if (memberData.avatar instanceof File) {
+      res = await axiosInstance.patchForm(`${API_ENDPOINTS.members}/${memberId}`, memberData);
+    } else {
+      res = await axiosInstance.patch(`${API_ENDPOINTS.members}/${memberId}`, memberData);
+    }
 
     if (!res || !res.status) {
       throw new Error('Failed to update Member');

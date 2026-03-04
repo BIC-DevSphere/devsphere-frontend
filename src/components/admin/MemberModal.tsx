@@ -13,6 +13,9 @@ export interface MemberData {
   status: "ACTIVE" | "INACTIVE";
   avatar?: File;
   avatarUrl?: string;
+  discordUrl?: string;
+  instagramUrl?: string;
+  linkedinUrl?: string;
 }
 
 interface MemberModalProps {
@@ -280,6 +283,52 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
                     </SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+            </div>
+
+            {/* Social Media Links */}
+            <div className="space-y-4 pt-4 border-t border-border/50">
+              <Label className="text-sm font-medium text-foreground">Social Media Links</Label>
+              
+              <div className="space-y-2">
+                <Label htmlFor="linkedinUrl" className="text-sm font-medium text-muted-foreground">
+                  LinkedIn Profile
+                </Label>
+                <Input
+                  id="linkedinUrl"
+                  name="linkedinUrl"
+                  value={formData.linkedinUrl || ''}
+                  onChange={handleChange}
+                  placeholder="https://linkedin.com/in/username"
+                  type="url"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="discordUrl" className="text-sm font-medium text-muted-foreground">
+                  Discord Username
+                </Label>
+                <Input
+                  id="discordUrl"
+                  name="discordUrl"
+                  value={formData.discordUrl || ''}
+                  onChange={handleChange}
+                  placeholder="username#1234"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="instagramUrl" className="text-sm font-medium text-muted-foreground">
+                  Instagram Profile
+                </Label>
+                <Input
+                  id="instagramUrl"
+                  name="instagramUrl"
+                  value={formData.instagramUrl || ''}
+                  onChange={handleChange}
+                  placeholder="https://instagram.com/username"
+                  type="url"
+                />
               </div>
             </div>
           </div>
