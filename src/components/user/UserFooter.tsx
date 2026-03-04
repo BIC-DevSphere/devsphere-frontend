@@ -20,9 +20,9 @@ const socialLinks = [
 ];
 
 const quickLinks = [
-  { to: '/', label: 'Members' },
-  { to: '/', label: 'Events' },
-  { to: '/', label: 'Projects' },
+  { to: '/members', label: 'Members' },
+  { to: '/events', label: 'Events' },
+  { to: '/projects', label: 'Projects' },
 ];
 
 const communityLinks = [
