@@ -1,0 +1,83 @@
+.gallery-container {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.gallery-track {
+  display: flex;
+  width: max-content;
+  animation: scroll 40s linear infinite;
+  /* Removed padding-top to align with container padding */
+  position: relative; /* create stacking context */
+  z-index: 20; /* ensure track (and pins) sit above the line */
+}
+
+.gallery-container:hover .gallery-track {
+  animation-play-state: paused;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+.gallery-line {
+  position: absolute;
+  top: 39px; /* Aligned with pin center */
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #333;
+  z-index: 10;
+}
+
+.gallery-item {
+  position: relative;
+  margin: 0 1rem;
+  transition: transform 0.3s ease;
+}
+
+.gallery-item:hover {
+  transform: scale(1.02) rotate(0deg) !important;
+  z-index: 20;
+}
+
+.pin {
+  width: 12px;
+  height: 40px; /* extended length */
+  background-color: #ef4444; /* red-500 */
+  border-radius: 6px; /* slightly rounded ends */
+  position: absolute;
+  top: -14px; /* shift upward to maintain center alignment over the line */
+  left: 50%;
+  transform: translateX(-50%);
+  transform: translateY(20%);
+  z-index: 20; /* ensure pins stay above the line */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 2px solid white;
+}
+
+.polaroid-card {
+  background: white;
+  padding: 12px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+  width: 250px;
+  transform-origin: top center;
+  transform: translateY(10%)
+}
+
+.polaroid-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  background-color: #f3f4f6;
+  border-radius: 2px;
+}
