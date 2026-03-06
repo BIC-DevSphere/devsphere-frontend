@@ -3,7 +3,10 @@ export interface MemberRequest {
   role: string;
   status: "ACTIVE" | "INACTIVE";
   year: string;
-  avatar?: File;
+  avatar?: File | null;
+  discordUrl?: string | null;
+  instagramUrl?: string | null;
+  linkedinUrl?: string | null;
 }
 
 export interface  Member {
@@ -13,4 +16,7 @@ export interface  Member {
     status : "ACTIVE" | "INACTIVE"
     year : string;
     avatarUrl : string | null;
+    discordUrl?: string | null;
+    instagramUrl?: string | null;
+    linkedinUrl?: string | null;
 }

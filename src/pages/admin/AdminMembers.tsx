@@ -1,5 +1,5 @@
 import { Input } from '@/components/ui/input';
-import { getAllMembers, createMember, getMemberById, updateMember } from '@/services/admin/memberServices';
+import { getAllMembers, createMember, updateMember } from '@/services/admin/memberServices';
 import { SearchIcon, PenIcon, TrashIcon, PlusIcon, FilterIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -7,16 +7,14 @@ import MemberModal, { MemberData } from '@/components/admin/MemberModal';
 import { Member } from '@/types/member.types';
 import { Button } from '@/components/ui/button';
 import { normalizeMemberData, extractUpdatedMemberFields } from '@/utils/member.utils';
-import { useParams } from 'react-router-dom';
-import { normalizeProjectData } from '@/utils/project.utils';
 
 
 const AdminMembers = () => {
   const [members, setMembers] = useState<Member[] | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedMember, setSelectedMember] = useState<Member>(null)
-  const [memberDataSnapshot, setMemberDataSnapshot] = useState<any>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all')
 
@@ -26,7 +24,7 @@ const AdminMembers = () => {
   }, []);
   const fetchMembers = async () => {
     try {
-      setIsLoading(true);
+      setIsInitialLoading(true);
       const data = await getAllMembers();
       if (!data) {
         toast.error('No members found');
@@ -37,7 +35,7 @@ const AdminMembers = () => {
       toast.error('Failed to fetch members');
       setMembers(null);
     } finally {
-      setIsLoading(false);
+      setIsInitialLoading(false);
     }
   };
 
@@ -61,56 +59,50 @@ const AdminMembers = () => {
   };
 
   const handleEditMember = async (memberData: MemberData) => {
+    const currentMember = selectedMember;
+    closeModel();
     try {
-      setIsLoading(true)
-      closeModel()
-      const normalizedPreviousData = normalizeMemberData(memberData)
-      const updatedMemberField = extractUpdatedMemberFields(selectedMember, normalizedPreviousData)
+      setIsSaving(true);
+      const normalizedData = normalizeMemberData(memberData);
+      if (!normalizedData) {
+        toast.error('Invalid member data');
+        return;
+      }
+      const updatedFields = extractUpdatedMemberFields(currentMember, normalizedData);
 
-      if (!updatedMemberField || Object.keys(updatedMemberField).length === 0) {
-        toast.error("No changes detected to update")
+      if (!updatedFields || Object.keys(updatedFields).length === 0) {
+        toast.error('No changes detected to update');
         return;
       }
 
-      try {
-        const data = await updateMember(selectedMember.id, updatedMemberField)
-        console.log("members", members)
-        console.log("data", data)
-
-        setMembers(prevMembers =>
-          prevMembers.map(member =>
-            member.id === data.id ? data : member
-          )
-        );
-
-        toast.success('Member updated successfully');
-      } catch (error) {
-        toast.error("Failed to update member")
-        console.log("Error update member: ", error)
-      }
-
+      const data = await updateMember(currentMember.id, updatedFields);
+      setMembers(prev => prev ? prev.map(m => m.id === data.id ? data : m) : [data]);
+      toast.success('Member updated successfully');
     } catch (error) {
-      console.log(error)
+      console.error('Error updating member:', error);
       toast.error('Failed to update member');
-    }
-    finally {
-      setIsLoading(false)
+    } finally {
+      setIsSaving(false);
     }
   }
 
   const handleSaveMember = async (formData: MemberData) => {
+    closeModel();
     try {
-      setIsLoading(true)
-      closeModel()
-      const data = await createMember(formData);
-      setMembers(members ? [...members, data] : [data]);
+      setIsSaving(true);
+      const normalizedData = normalizeMemberData(formData);
+      if (!normalizedData) {
+        toast.error('Invalid member data');
+        return;
+      }
+      const data = await createMember(normalizedData);
+      setMembers(prev => prev ? [...prev, data] : [data]);
       toast.success('Member created successfully');
     } catch (error) {
-      console.log(error)
+      console.error('Error creating member:', error);
       toast.error('Failed to create member');
-    }
-    finally {
-      setIsLoading(false)
+    } finally {
+      setIsSaving(false);
     }
   }
 
@@ -191,7 +183,7 @@ const AdminMembers = () => {
       </div>
 
       <div className="members-list-section grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {isLoading ? (
+        {isInitialLoading ? (
           <div className="flex min-h-[400px] items-center justify-center">
             <div className="text-center">
               <div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600"></div>

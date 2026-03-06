@@ -8,6 +8,9 @@ export const useMemberForm = () => {
     year: new Date().toISOString().split('T')[0],
     avatar: null as File | null,
     avatarUrl: '',
+    discordUrl: '',
+    instagramUrl: '',
+    linkedinUrl: '',
   });
 
   const [formErrors, setFormErrors] = useState({
@@ -118,6 +121,9 @@ export const useMemberForm = () => {
       year: new Date().toISOString().split('T')[0],
       avatar: null,
       avatarUrl: '',
+      discordUrl: '',
+      instagramUrl: '',
+      linkedinUrl: '',
     });
     setFormErrors({
       name: '',
@@ -133,6 +139,9 @@ export const useMemberForm = () => {
       name: memberData.name || '',
       role: memberData.role || '',
       status: memberData.status || 'ACTIVE',
+      discordUrl: memberData.discordUrl || '',
+      instagramUrl: memberData.instagramUrl || '',
+      linkedinUrl: memberData.linkedinUrl || '',
       year: memberData.year ? new Date(memberData.year).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       avatar: memberData.avatar || null,
       avatarUrl: memberData.avatarUrl || '',

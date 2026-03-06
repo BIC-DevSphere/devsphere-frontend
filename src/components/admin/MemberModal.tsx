@@ -13,6 +13,9 @@ export interface MemberData {
   status: "ACTIVE" | "INACTIVE";
   avatar?: File;
   avatarUrl?: string;
+  discordUrl?: string;
+  instagramUrl?: string;
+  linkedinUrl?: string;
 }
 
 interface MemberModalProps {
@@ -37,7 +40,21 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
   } = useMemberForm();
 
   const [isDragOver, setIsDragOver] = useState(false);
-  const [preview, setPreview] = useState<string>("")
+  const [preview, setPreview] = useState<string>("");
+
+  // Utility to validate and normalize URLs
+  const getSafeUrl = (url?: string) => {
+    if (!url) return undefined;
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+        return url;
+      }
+    } catch {
+      // Invalid URL
+    }
+    return undefined;
+  };
 
   useEffect(() => {
     if (member) {
@@ -121,7 +138,9 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
     }
   }
 
-
+  // Safe URLs for social media
+  const safeLinkedinUrl = getSafeUrl(formData.linkedinUrl);
+  const safeInstagramUrl = getSafeUrl(formData.instagramUrl);
 
   return (
     <div
@@ -280,6 +299,74 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
                     </SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+            </div>
+
+            {/* Social Media Links */}
+            <div className="space-y-4 pt-4 border-t border-border/50">
+              <Label className="text-sm font-medium text-foreground">Social Media Links</Label>
+
+              <div className="space-y-2">
+                <Label htmlFor="linkedinUrl" className="text-sm font-medium text-muted-foreground">
+                  LinkedIn Profile
+                </Label>
+                <Input
+                  id="linkedinUrl"
+                  name="linkedinUrl"
+                  value={formData.linkedinUrl || ''}
+                  onChange={handleChange}
+                  placeholder="https://linkedin.com/in/username"
+                  type="url"
+                />
+                {/* Render link only if safe */}
+                {safeLinkedinUrl && (
+                  <a
+                    href={safeLinkedinUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary underline text-xs mt-1 block"
+                  >
+                    View LinkedIn Profile
+                  </a>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="discordUrl" className="text-sm font-medium text-muted-foreground">
+                  Discord Link
+                </Label>
+                <Input
+                  id="discordUrl"
+                  name="discordUrl"
+                  value={formData.discordUrl || ''}
+                  onChange={handleChange}
+                  placeholder="username#1234"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="instagramUrl" className="text-sm font-medium text-muted-foreground">
+                  Instagram Profile
+                </Label>
+                <Input
+                  id="instagramUrl"
+                  name="instagramUrl"
+                  value={formData.instagramUrl || ''}
+                  onChange={handleChange}
+                  placeholder="https://instagram.com/username"
+                  type="url"
+                />
+                {/* Render link only if safe */}
+                {safeInstagramUrl && (
+                  <a
+                    href={safeInstagramUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary underline text-xs mt-1 block"
+                  >
+                    View Instagram Profile
+                  </a>
+                )}
               </div>
             </div>
           </div>

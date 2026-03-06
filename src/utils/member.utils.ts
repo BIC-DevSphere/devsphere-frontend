@@ -9,6 +9,9 @@ export const normalizeMemberData = (data: any): MemberRequest | null => {
       status: data.status || 'ACTIVE',
       year: new Date(data.year).toISOString(),
       avatar: data.avatar ?? null,
+      discordUrl: data.discordUrl?.trim() || null,
+      instagramUrl: data.instagramUrl?.trim() || null,
+      linkedinUrl: data.linkedinUrl?.trim() || null,
     };
     return normalizedData;
   } catch (error) {
@@ -39,7 +42,20 @@ export const extractUpdatedMemberFields = (
         if (val instanceof File) {
           return [key, val];
         } else {
-          if (dataFromSnapshot !== val) {
+          const normalizedSnapshot = dataFromSnapshot;
+          const normalizedVal = val;
+          
+          if (['discordUrl', 'instagramUrl', 'linkedinUrl'].includes(key)) {
+            const snapshotValue = normalizedSnapshot || null;
+            const newValue = normalizedVal || null;
+            
+            if (snapshotValue !== newValue) {
+              return [key, newValue];
+            }
+            return null;
+          }
+          
+          if (normalizedSnapshot !== normalizedVal) {
             return [key, val];
           }
           return null;
