@@ -23,7 +23,7 @@ const InfiniteGallery: React.FC = () => {
       <div className="gallery-track">
         {items.map((src, index) => (
           <GalleryItem
-            key={index}
+            key={`item-${index}`}
             imageSrc={src}
             altText={`Gallery image ${index}`}
             rotation={(index % 2 === 0 ? 2 : -2) + (Math.random() * 2 - 1)}
