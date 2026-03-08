@@ -9,7 +9,7 @@ const SocialLinks = ({ className = '' }: SocialLinksProps) => {
     <div className={`flex items-center gap-4 ${className}`}>
       {socialLinks.map(({ href, icon, label }, idx) => (
         <a
-          key={`social-${idx}`}
+          key={`social-item-${idx}`}
           href={href}
           target="_blank"
           rel="noopener noreferrer"

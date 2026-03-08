@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, LaptopMinimal, TabletSmartphone, Bot, Github } from 'lucide-react';
+import { Box, LaptopMinimal, TabletSmartphone, Bot, Github, Calendar, Link } from 'lucide-react';
 import { Button } from '../ui/button';
 import { formatDate } from '@/utils/formatdate.utils';
 import { getAllProjects } from '@/services/admin/projectServices';
@@ -40,22 +40,19 @@ const ProjectSection: React.FC = () => {
       : projects.filter((project) => (project.tags || []).some((tag) => tag.name === activeFilter));
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-10">
+    <section>
       <h2 className="text-primary mb-6 text-center text-3xl font-bold">Projects</h2>
 
       {/* Filter Buttons */}
       <div className="mb-8 flex flex-wrap justify-start gap-4">
-        {FILTERS.map((filter) => (
+        {FILTERS.map((filter, idx) => (
           <Button
-            key={filter.tag}
+            key={`filter-item-${idx}`}
             onClick={() => setActiveFilter(filter.tag)}
-            className={`flex gap-2 rounded-xl px-4 py-2 transition ${
-              activeFilter === filter.tag
-                ? 'bg-gray-300 text-black dark:bg-gray-700'
-                : 'bg-gray-400 text-black hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700'
-            }`}
+            className={`flex gap-2 rounded-full bg-white px-2 py-6 text-black shadow-lg transition`}
           >
-            {filter.icon} {filter.label}
+            <div className="rounded-full bg-gray-200 p-2">{filter.icon}</div>
+            {filter.label}
           </Button>
         ))}
       </div>
@@ -65,9 +62,9 @@ const ProjectSection: React.FC = () => {
         {filteredProjects.map((project) => (
           <div
             key={project.id}
-            className="project-card rounded-xl bg-gray-50 p-5 shadow-md transition hover:shadow-lg dark:bg-gray-800"
+            className="project-card min-w-[20rem] rounded-xl bg-gray-50 shadow-md transition hover:shadow-lg dark:bg-gray-800"
           >
-            <div className="relative mb-4 h-44 w-full overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">
+            <div className="relative h-52 w-full overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">
               {project.thumbnailUrl ? (
                 <img
                   src={project.thumbnailUrl}
@@ -91,60 +88,62 @@ const ProjectSection: React.FC = () => {
                 ))}
               </div>
             </div>
+            <div className="p-5">
+              <h3 className="mb-1 text-xl font-semibold text-gray-800 dark:text-gray-200">
+                {project.name}
+              </h3>
+              <p className="mb-3 flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+                <Calendar size={20} /> {formatDate(project.createdAt)}
+              </p>
 
-            <h3 className="mb-1 text-xl font-semibold text-gray-800 dark:text-gray-200">
-              {project.name}
-            </h3>
-            <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
-              Created: {formatDate(project.createdAt)}
-            </p>
+              {/* Tech Stack */}
+              <div className="mb-3 flex gap-2 overflow-x-auto">
+                {(project.techStacks || []).map((tech) => (
+                  <span
+                    key={project.id}
+                    className="rounded-full bg-red-50 px-3 py-1 text-sm whitespace-nowrap text-red-800"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
 
-            {/* Tech Stack */}
-            <div className="mb-3 flex gap-2 overflow-x-auto">
-              {(project.techStacks || []).map((tech, i) => (
-                <span
-                  key={i}
-                  className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium whitespace-nowrap text-green-800 transition hover:bg-gray-300"
+              {/* Contributors*/}
+              <div className="mb-4 flex items-center gap-2">
+                {(project.contributors || []).slice(0, 3).map((c) => (
+                  <div
+                    key={c.id}
+                    className="h-8 w-8 transform overflow-hidden rounded-full border-2 border-gray-300 transition hover:scale-110 dark:border-gray-600"
+                    title={c.name}
+                  >
+                    {c.avatarUrl && (
+                      <img src={c.avatarUrl} alt={c.name} className="h-full w-full object-cover" />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-2">
+                <a
+                  href={project.githubLink || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gray-700 py-2 font-medium text-white transition hover:bg-gray-500 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 >
-                  {tech}
-                </span>
-              ))}
-            </div>
-
-            {/* Contributors*/}
-            <div className="mb-4 flex items-center gap-2">
-              {(project.contributors || []).slice(0, 3).map((c) => (
-                <div
-                  key={c.id}
-                  className="h-8 w-8 transform overflow-hidden rounded-full border-2 border-gray-300 transition hover:scale-110 dark:border-gray-600"
-                  title={c.name}
+                  <Github className="h-5 w-5" />
+                  Github
+                </a>
+                <a
+                  href={project.demoLink || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gray-200 py-2 font-medium text-gray-800 transition hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 >
-                  {c.avatarUrl && (
-                    <img src={c.avatarUrl} alt={c.name} className="h-full w-full object-cover" />
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-2">
-              <a
-                href={project.githubLink || '#'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gray-700 py-2 font-medium text-white transition hover:bg-gray-500 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-              >
-                <Github className="h-5 w-5" />
-                Github
-              </a>
-              <a
-                href={project.demoLink || '#'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gray-200 py-2 font-medium text-gray-800 transition hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-              >
-                Demo
-              </a>
+                  <Link className="h-5 w-5" />
+                  Demo
+                </a>
+              </div>
             </div>
           </div>
         ))}

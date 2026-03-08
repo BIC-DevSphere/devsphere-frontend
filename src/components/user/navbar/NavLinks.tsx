@@ -10,7 +10,7 @@ const NavLinks = ({ onClick }: NavLinksProps) => {
     <>
       {navLinks.map(({ to, label, icon }, idx) => (
         <NavLink
-          key={`nav-${idx}`}
+          key={`nav-item-${idx}`}
           to={to}
           onClick={onClick}
           className={({ isActive }) =>

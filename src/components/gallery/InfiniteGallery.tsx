@@ -15,15 +15,15 @@ const InfiniteGallery: React.FC = () => {
   const items = [...exampleImages, ...exampleImages, ...exampleImages];
 
   return (
-    <div className="gallery-container relative w-full overflow-hidden py-10">
+    <div className="gallery-container w-full overflow-hidden py-10">
       {/* The Line - Static */}
-      <div className="gallery-line"></div>
+      <div className="h-0.5 bg-black"></div>
 
       {/* Scrolling Track */}
-      <div className="gallery-track">
+      <div className="gallery-track flex animate-scroll w-fit">
         {items.map((src, index) => (
           <GalleryItem
-            key={`item-${index}`}
+            key={`gallery-item-${index}`}
             imageSrc={src}
             altText={`Gallery image ${index}`}
             rotation={(index % 2 === 0 ? 2 : -2) + (Math.random() * 2 - 1)}

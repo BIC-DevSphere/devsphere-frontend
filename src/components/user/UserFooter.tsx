@@ -44,7 +44,7 @@ const UserFooter = () => {
           <div className="flex gap-4">
             {socialLinks.map(({ href, icon, label }, idx) => (
               <a
-                key={`social-${idx}`}
+                key={`social-item-${idx}`}
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -61,7 +61,7 @@ const UserFooter = () => {
           <p className="text-primary text-xl font-bold">Quick Link</p>
           <ul className="space-y-2">
             {quickLinks.map(({ to, label }, idx) => (
-              <li key={`qlink-${idx}`}>
+              <li key={`qlink-item-${idx}`}>
                 <Link to={to} className="hover:underline">
                   {label}
                 </Link>
@@ -74,7 +74,7 @@ const UserFooter = () => {
           <p className="text-primary text-xl font-bold">Community</p>
           <ul className="space-y-2">
             {communityLinks.map(({ to, label }, idx) => (
-              <li key={`clink-${idx}`}>
+              <li key={`clink-item-${idx}`}>
                 <Link to={to} className="hover:underline">
                   {label}
                 </Link>

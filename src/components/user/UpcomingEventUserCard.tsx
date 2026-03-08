@@ -35,7 +35,7 @@ const UpcomingEventUserCard = () => {
   const event = events[0];
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-10">
+    <section>
       <h2 className="text-primary mb-6 text-center text-3xl font-bold">
         Upcoming Events
       </h2>
@@ -43,7 +43,7 @@ const UpcomingEventUserCard = () => {
         {/* Left Image */}
         <div className="relative w-1/3 h-full p-4">
           <img
-            src={event.thumbnailUrl}
+            src={event.thumbnailUrl || "https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg"}
             alt="Upcoming Event"
             className="h-full w-full object-cover rounded-2xl"
           />
