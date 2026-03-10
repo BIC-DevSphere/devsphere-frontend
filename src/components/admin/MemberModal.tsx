@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { X, Upload, User } from "lucide-react";
-import { useMemberForm } from "@/hooks/useMemberForm";
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { X, Upload, User, Loader2 } from 'lucide-react';
+import { useMemberForm } from '@/hooks/useMemberForm';
 
 export interface MemberData {
   name: string;
   role: string;
   year: string;
-  status: "ACTIVE" | "INACTIVE";
+  status: 'ACTIVE' | 'INACTIVE';
   avatar?: File;
   avatarUrl?: string;
   discordUrl?: string;
@@ -24,9 +24,17 @@ interface MemberModalProps {
   onEdit: (data: MemberData) => void;
   onSave: (data: MemberData) => void;
   member?: MemberData | null;
+  isSaving?: boolean;
 }
 
-const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSave, member }) => {
+const MemberModal: React.FC<MemberModalProps> = ({
+  isOpen,
+  onClose,
+  onEdit,
+  onSave,
+  member,
+  isSaving = false,
+}) => {
   const {
     createMemberData: formData,
     setMemberData,
@@ -40,14 +48,14 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
   } = useMemberForm();
 
   const [isDragOver, setIsDragOver] = useState(false);
-  const [preview, setPreview] = useState<string>("");
+  const [preview, setPreview] = useState<string>('');
 
   // Utility to validate and normalize URLs
   const getSafeUrl = (url?: string) => {
     if (!url) return undefined;
     try {
       const parsed = new URL(url);
-      if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
         return url;
       }
     } catch {
@@ -64,7 +72,7 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
       }
     } else {
       resetForm();
-      setPreview("");
+      setPreview('');
     }
   }, [member, isOpen, setMemberData, resetForm]);
 
@@ -75,7 +83,7 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
   };
 
   const handleStatusChangeWrapper = (value: string) => {
-    handleStatusChange(value as "ACTIVE" | "INACTIVE");
+    handleStatusChange(value as 'ACTIVE' | 'INACTIVE');
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,10 +110,10 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
     setIsDragOver(false);
 
     const file = e.dataTransfer.files[0];
-    console.log("File : ", file)
-    if (file && file.type.startsWith("image/")) {
+    console.log('File : ', file);
+    if (file && file.type.startsWith('image/')) {
       if (file.size > 5 * 1024 * 1024) {
-        alert("Image size should be less than 5MB");
+        alert('Image size should be less than 5MB');
         return;
       }
       const blobUrl = URL.createObjectURL(file);
@@ -121,22 +129,22 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
     try {
       onSave(formData);
     } catch (error) {
-      console.error("Failed to save member data:", error);
-      alert("An error occurred while saving. Please try again.");
+      console.error('Failed to save member data:', error);
+      alert('An error occurred while saving. Please try again.');
     }
-  }
+  };
 
   const handleEdit = () => {
     if (!validateForm()) {
       return;
     }
     try {
-      onEdit(formData)
+      onEdit(formData);
     } catch (error) {
-      console.error("Failed to save member data:", error);
-      alert("An error occurred while saving. Please try again.");
+      console.error('Failed to save member data:', error);
+      alert('An error occurred while saving. Please try again.');
     }
-  }
+  };
 
   // Safe URLs for social media
   const safeLinkedinUrl = getSafeUrl(formData.linkedinUrl);
@@ -144,48 +152,49 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       role="dialog"
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
     >
-      <div className="bg-card border border-border w-full max-w-lg rounded-xl shadow-xl overflow-hidden animate-in fade-in-50 zoom-in-95 duration-200">
+      <div className="bg-card border-border animate-in fade-in-50 zoom-in-95 w-full max-w-lg overflow-hidden rounded-xl border shadow-xl duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 pb-4 border-b border-border/50">
+        <div className="border-border/50 flex items-center justify-between border-b p-6 pb-4">
           <div>
-            <h2 id="modal-title" className="text-xl font-semibold text-foreground font-heading">
-              {member ? "Edit Member" : "Add New Member"}
+            <h2 id="modal-title" className="text-foreground font-heading text-xl font-semibold">
+              {member ? 'Edit Member' : 'Add New Member'}
             </h2>
-            <p id="modal-description" className="text-sm text-muted-foreground mt-1">
-              {member ? "Update member information" : "Add a new team member to your organization"}
+            <p id="modal-description" className="text-muted-foreground mt-1 text-sm">
+              {member ? 'Update member information' : 'Add a new team member to your organization'}
             </p>
           </div>
           <Button
             variant="ghost"
             size="icon"
             onClick={onClose}
+            disabled={isSaving}
             className="text-muted-foreground hover:text-foreground h-8 w-8 shrink-0"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </Button>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="space-y-6 p-6">
           {/* Avatar Upload Section */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium text-foreground">Profile Picture</Label>
+            <Label className="text-foreground text-sm font-medium">Profile Picture</Label>
             <div className="flex items-center gap-4">
               <div className="relative">
-                <div className="w-20 h-20 rounded-full border-2 border-border bg-muted overflow-hidden">
+                <div className="border-border bg-muted h-20 w-20 overflow-hidden rounded-full border-2">
                   {preview ? (
                     <img
                       src={preview ?? formData.avatarUrl}
                       alt="Profile"
-                      className="w-full h-full object-cover"
+                      className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-secondary">
-                      <User className="w-8 h-8 text-muted-foreground" />
+                    <div className="bg-secondary flex h-full w-full items-center justify-center">
+                      <User className="text-muted-foreground h-8 w-8" />
                     </div>
                   )}
                 </div>
@@ -193,10 +202,11 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
 
               <div className="flex-1">
                 <div
-                  className={`relative border-2 border-dashed rounded-lg p-4 transition-colors ${isDragOver
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-primary/50 hover:bg-accent/50"
-                    }`}
+                  className={`relative rounded-lg border-2 border-dashed p-4 transition-colors ${
+                    isDragOver
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-primary/50 hover:bg-accent/50'
+                  }`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
@@ -205,16 +215,16 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                     id="avatar-upload"
                   />
                   <div className="text-center">
-                    <Upload className="w-5 h-5 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">
+                    <Upload className="text-muted-foreground mx-auto mb-2 h-5 w-5" />
+                    <p className="text-muted-foreground text-sm">
                       <span className="text-primary font-medium">Click to upload</span> or drag and
                       drop
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 5MB</p>
+                    <p className="text-muted-foreground mt-1 text-xs">PNG, JPG up to 5MB</p>
                   </div>
                 </div>
               </div>
@@ -224,7 +234,7 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
           {/* Form Fields */}
           <div className="grid gap-4">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium text-foreground">
+              <Label htmlFor="name" className="text-foreground text-sm font-medium">
                 Full Name *
               </Label>
               <Input
@@ -233,16 +243,16 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Enter full name"
-                className={errors.name ? "border-destructive focus-visible:ring-destructive/20" : ""}
+                className={
+                  errors.name ? 'border-destructive focus-visible:ring-destructive/20' : ''
+                }
                 aria-invalid={!!errors.name}
               />
-              {errors.name && (
-                <p className="text-sm text-destructive font-medium">{errors.name}</p>
-              )}
+              {errors.name && <p className="text-destructive text-sm font-medium">{errors.name}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="role" className="text-sm font-medium text-foreground">
+              <Label htmlFor="role" className="text-foreground text-sm font-medium">
                 Role / Position *
               </Label>
               <Input
@@ -251,17 +261,17 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
                 value={formData.role}
                 onChange={handleChange}
                 placeholder="e.g. Frontend Developer, Designer"
-                className={errors.role ? "border-destructive focus-visible:ring-destructive/20" : ""}
+                className={
+                  errors.role ? 'border-destructive focus-visible:ring-destructive/20' : ''
+                }
                 aria-invalid={!!errors.role}
               />
-              {errors.role && (
-                <p className="text-sm text-destructive font-medium">{errors.role}</p>
-              )}
+              {errors.role && <p className="text-destructive text-sm font-medium">{errors.role}</p>}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="year" className="text-sm font-medium text-foreground">
+                <Label htmlFor="year" className="text-foreground text-sm font-medium">
                   Joined Year *
                 </Label>
                 <Input
@@ -270,16 +280,18 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
                   type="date"
                   value={formData.year}
                   onChange={handleChange}
-                  className={errors.year ? "border-destructive focus-visible:ring-destructive/20" : ""}
+                  className={
+                    errors.year ? 'border-destructive focus-visible:ring-destructive/20' : ''
+                  }
                   aria-invalid={!!errors.year}
                 />
                 {errors.year && (
-                  <p className="text-sm text-destructive font-medium">{errors.year}</p>
+                  <p className="text-destructive text-sm font-medium">{errors.year}</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-foreground">Status</Label>
+                <Label className="text-foreground text-sm font-medium">Status</Label>
                 <Select value={formData.status} onValueChange={handleStatusChangeWrapper}>
                   <SelectTrigger className="w-full">
                     <SelectValue />
@@ -287,13 +299,13 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
                   <SelectContent>
                     <SelectItem value="ACTIVE">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                        <div className="h-2 w-2 rounded-full bg-green-500"></div>
                         Active
                       </div>
                     </SelectItem>
                     <SelectItem value="INACTIVE">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+                        <div className="h-2 w-2 rounded-full bg-gray-400"></div>
                         Inactive
                       </div>
                     </SelectItem>
@@ -303,11 +315,11 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
             </div>
 
             {/* Social Media Links */}
-            <div className="space-y-4 pt-4 border-t border-border/50">
-              <Label className="text-sm font-medium text-foreground">Social Media Links</Label>
+            <div className="border-border/50 space-y-4 border-t pt-4">
+              <Label className="text-foreground text-sm font-medium">Social Media Links</Label>
 
               <div className="space-y-2">
-                <Label htmlFor="linkedinUrl" className="text-sm font-medium text-muted-foreground">
+                <Label htmlFor="linkedinUrl" className="text-muted-foreground text-sm font-medium">
                   LinkedIn Profile
                 </Label>
                 <Input
@@ -324,7 +336,7 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
                     href={safeLinkedinUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary underline text-xs mt-1 block"
+                    className="text-primary mt-1 block text-xs underline"
                   >
                     View LinkedIn Profile
                   </a>
@@ -332,7 +344,7 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="discordUrl" className="text-sm font-medium text-muted-foreground">
+                <Label htmlFor="discordUrl" className="text-muted-foreground text-sm font-medium">
                   Discord Link
                 </Label>
                 <Input
@@ -345,7 +357,7 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="instagramUrl" className="text-sm font-medium text-muted-foreground">
+                <Label htmlFor="instagramUrl" className="text-muted-foreground text-sm font-medium">
                   Instagram Profile
                 </Label>
                 <Input
@@ -362,7 +374,7 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
                     href={safeInstagramUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary underline text-xs mt-1 block"
+                    className="text-primary mt-1 block text-xs underline"
                   >
                     View Instagram Profile
                   </a>
@@ -373,14 +385,33 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, onEdit, onSa
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 pt-4 border-t border-border/50 bg-muted/30">
-          <Button variant="outline" onClick={onClose} className="min-w-20">
+        <div className="border-border/50 bg-muted/30 flex items-center justify-end gap-3 border-t p-6 pt-4">
+          <Button variant="outline" onClick={onClose} disabled={isSaving} className="min-w-20">
             Cancel
           </Button>
-          {member ?
-            <Button onClick={handleEdit} className="min-w-20">Update Member</Button>
-            : <Button onClick={handleSave} className="min-w-20">Create Member</Button>
-          }
+          {member ? (
+            <Button onClick={handleEdit} disabled={isSaving} className="min-w-24">
+              {isSaving ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Updating…
+                </span>
+              ) : (
+                'Update Member'
+              )}
+            </Button>
+          ) : (
+            <Button onClick={handleSave} disabled={isSaving} className="min-w-24">
+              {isSaving ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Creating…
+                </span>
+              ) : (
+                'Create Member'
+              )}
+            </Button>
+          )}
         </div>
       </div>
     </div>
