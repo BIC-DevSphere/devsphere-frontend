@@ -9,9 +9,9 @@ import {
 } from 'react-icons/fa';
 
 export interface NavLinkItem {
-  to: string;
   label: string;
   icon: React.ReactNode;
+  section: string;
 }
 
 export interface SocialLinkItem {
@@ -21,10 +21,10 @@ export interface SocialLinkItem {
 }
 
 export const navLinks: NavLinkItem[] = [
-  { to: '/', label: 'Home', icon: <FaHome /> },
-  { to: '/events', label: 'Events', icon: <FaCalendarAlt /> },
-  { to: '/projects', label: 'Projects', icon: <FaRegClipboard /> },
-  { to: '/members', label: 'Members', icon: <FaUsers /> },
+  { label: 'Home', icon: <FaHome />, section: 'home' },
+  { label: 'Events', icon: <FaCalendarAlt />, section: 'events' },
+  { label: 'Projects', icon: <FaRegClipboard />, section: 'projects' },
+  { label: 'Members', icon: <FaUsers />, section: 'members' },
 ];
 
 export const socialLinks: SocialLinkItem[] = [

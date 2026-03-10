@@ -22,7 +22,7 @@ const MobileMenu = () => {
 
       {/* Dropdown mobile menu */}
       {isOpen && (
-        <div className="border-border bg-background absolute top-full left-0 w-full border-b shadow-lg">
+        <div className="border-border bg-white absolute top-full left-0 w-full border-b shadow-lg">
           <nav className="flex flex-col gap-2 px-6 py-4">
             <NavLinks onClick={close} />
           </nav>

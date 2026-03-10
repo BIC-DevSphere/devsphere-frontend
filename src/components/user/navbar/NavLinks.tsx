@@ -1,27 +1,30 @@
-import { NavLink } from 'react-router-dom';
+import { scrollToSection } from '@/hooks/useScrollSection';
 import { navLinks } from './navbarData';
+import { useScrollSectionContext } from '@/contexts/ScrollSectionContext';
 
 interface NavLinksProps {
   onClick?: () => void;
 }
 
 const NavLinks = ({ onClick }: NavLinksProps) => {
+  const { activeSection } = useScrollSectionContext();
+
   return (
     <>
-      {navLinks.map(({ to, label, icon }, idx) => (
-        <NavLink
-          key={`nav-item-${idx}`}
-          to={to}
-          onClick={onClick}
-          className={({ isActive }) =>
-            `flex items-center gap-2 rounded-full px-6 py-2 text-lg font-medium transition ${
-              isActive ? 'border-r border-b text-red-500' : ''
-            }`
-          }
+      {navLinks.map(({ label, icon, section }) => (
+        <button
+          key={section}
+          onClick={() => {
+            scrollToSection(section);
+            onClick?.();
+          }}
+          className={`flex items-center gap-2 rounded-full px-6 py-2 text-lg font-medium transition ${
+            activeSection === section ? 'border-r border-b text-red-500' : ''
+          }`}
         >
           <span className="text-xl">{icon}</span>
           {label}
-        </NavLink>
+        </button>
       ))}
     </>
   );

@@ -32,7 +32,7 @@ const communityLinks = [
 
 const UserFooter = () => {
   return (
-    <footer className="text-foreground border-border w-full space-y-10 border-t px-10 py-8">
+    <footer className="text-foreground border-border w-full space-y-10 border-t px-6 md:px-20 py-8">
       <div className="flex flex-col gap-10 md:flex-row md:justify-between">
         {/* Left Section */}
         <div className="space-y-4 md:max-w-1/5">
