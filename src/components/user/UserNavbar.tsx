@@ -4,7 +4,7 @@ import SocialLinks from './navbar/SocialLinks';
 
 const UserNavbar = () => {
   return (
-    <nav className="bg-white border-border sticky top-0 z-50 flex w-full items-center justify-between border-b px-6 md:px-20">
+    <nav className="bg-white border-border sticky top-0 z-50 flex w-full items-center justify-between border-b px-6 md:px-40">
       {/* Logo */}
       <div className="flex items-center gap-2">
         <img src="/logo.png" alt="Devsphere Logo" className="h-16 md:h-20" />

@@ -28,7 +28,7 @@ const MemberUserCard = () => {
 
   return (
     <section>
-      <h2 className="text-primary mb-6 text-center text-3xl font-bold">
+      <h2 className="text-red-700 mb-10 text-center text-5xl font-bold">
         Meet Our Team
       </h2>
       <div className="flex flex-wrap justify-center sm:justify-between gap-x-20">

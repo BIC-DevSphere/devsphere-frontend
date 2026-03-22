@@ -32,7 +32,7 @@ const communityLinks = [
 
 const UserFooter = () => {
   return (
-    <footer className="text-foreground border-border w-full space-y-10 border-t px-6 md:px-20 py-8">
+    <footer className="text-foreground border-border w-full space-y-10 border-t px-6 md:px-40 py-8">
       <div className="flex flex-col gap-10 md:flex-row md:justify-between">
         {/* Left Section */}
         <div className="space-y-4 md:max-w-1/5">
@@ -58,7 +58,7 @@ const UserFooter = () => {
         </div>
         {/* Quick Link */}
         <div className="space-y-4">
-          <p className="text-primary text-xl font-bold">Quick Link</p>
+          <p className="text-red-700 text-xl font-bold">Quick Link</p>
           <ul className="space-y-2">
             {quickLinks.map(({ to, label }, idx) => (
               <li key={`qlink-item-${idx}`}>
@@ -71,7 +71,7 @@ const UserFooter = () => {
         </div>
         {/* Community */}
         <div className="space-y-4">
-          <p className="text-primary text-xl font-bold">Community</p>
+          <p className="text-red-700 text-xl font-bold">Community</p>
           <ul className="space-y-2">
             {communityLinks.map(({ to, label }, idx) => (
               <li key={`clink-item-${idx}`}>

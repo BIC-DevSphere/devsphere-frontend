@@ -3,6 +3,7 @@ import InfiniteGallery from '@/components/gallery/InfiniteGallery';
 import MemberUserCard from '@/components/user/MemberUserCard';
 import ProjectSection from '@/components/user/ProjectSection';
 import UpcomingEventUserCard from '@/components/user/UpcomingEventUserCard';
+import FAQ from '@/components/user/FAQ';
 import { useScrollSection } from '@/hooks/useScrollSection';
 import { useScrollSectionContext } from '@/contexts/ScrollSectionContext';
 
@@ -60,12 +61,12 @@ const UserHome = () => {
             alt="rocket"
           />
           <div className="mb-4 text-5xl font-bold md:text-7xl">
-            <span className="text-red-500">Learn.</span>
+            <span className="text-red-700">Learn.</span>
             <span className="bg-red-700 px-4 text-white line-through">Code</span>
           </div>
           <div className="text-5xl font-bold md:text-7xl">
             <span className="text-black">Grow. </span>
-            <span className="text-red-500">Together</span>
+            <span className="text-red-700">Together</span>
           </div>
           <img
             className="hero-motion-rocket-right absolute -right-20 -bottom-10 w-24 md:-right-36 md:-bottom-12 md:w-40"
@@ -79,7 +80,7 @@ const UserHome = () => {
       </section>
 
       <div style={heroStyle} className="hero-motion-panel relative z-10 rounded-t-3xl bg-white">
-        <div className="space-y-20 px-6 py-20 md:px-20">
+        <div className="space-y-20 px-6 py-20 md:px-40">
           <section data-section-id="events">
             <UpcomingEventUserCard />
           </section>
@@ -89,6 +90,7 @@ const UserHome = () => {
           <section data-section-id="members">
             <MemberUserCard />
           </section>
+          <FAQ />
         </div>
       </div>
     </div>

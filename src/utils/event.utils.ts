@@ -1,3 +1,23 @@
+import { formatDate } from '@/utils/formatdate.utils';
+
+export const getEventScheduleText = (eventSchedule: any[]) => {
+  return eventSchedule?.length
+    ? `${formatDate(eventSchedule[0].startDate)} - ${formatDate(
+        eventSchedule[eventSchedule.length - 1].endDate
+      )}`
+    : 'Date TBD';
+};
+
+export const getEventDurationText = (eventSchedule: any[]) => {
+  return eventSchedule?.length
+    ? `${Math.ceil(
+        (new Date(eventSchedule[eventSchedule.length - 1].endDate).getTime() -
+          new Date(eventSchedule[0].startDate).getTime()) /
+          (1000 * 60 * 60 * 24)
+      )} days`
+    : 'Duration TBD';
+};
+
 export const normalizeEventData = (data: any) => {
   try {
     // Parse description if it's a string
