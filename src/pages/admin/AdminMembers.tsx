@@ -8,16 +8,15 @@ import { Member } from '@/types/member.types';
 import { Button } from '@/components/ui/button';
 import { normalizeMemberData, extractUpdatedMemberFields } from '@/utils/member.utils';
 
-
 const AdminMembers = () => {
   const [members, setMembers] = useState<Member[] | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedMember, setSelectedMember] = useState<Member>(null)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all')
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<Member>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
+  const [recentlyUpdatedId, setRecentlyUpdatedId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchMembers();
@@ -40,14 +39,14 @@ const AdminMembers = () => {
   };
 
   const handleEdit = (member: Member) => {
-    setSelectedMember(member)
-    setIsModalOpen(true)
-  }
+    setSelectedMember(member);
+    setIsModalOpen(true);
+  };
 
-  const handleDelete = (member :Member) => {
-    const newMembers = members.filter(m => m.id != member.id)
-    setMembers(newMembers)
-  }
+  const handleDelete = (member: Member) => {
+    const newMembers = members.filter((m) => m.id != member.id);
+    setMembers(newMembers);
+  };
 
   const handleAddMember = () => {
     setIsModalOpen(true);
@@ -60,7 +59,6 @@ const AdminMembers = () => {
 
   const handleEditMember = async (memberData: MemberData) => {
     const currentMember = selectedMember;
-    closeModel();
     try {
       setIsSaving(true);
       const normalizedData = normalizeMemberData(memberData);
@@ -76,18 +74,20 @@ const AdminMembers = () => {
       }
 
       const data = await updateMember(currentMember.id, updatedFields);
-      setMembers(prev => prev ? prev.map(m => m.id === data.id ? data : m) : [data]);
+      setMembers((prev) => (prev ? prev.map((m) => (m.id === data.id ? data : m)) : [data]));
+      setRecentlyUpdatedId(data.id);
+      setTimeout(() => setRecentlyUpdatedId(null), 1800);
       toast.success('Member updated successfully');
+      closeModel();
     } catch (error) {
       console.error('Error updating member:', error);
       toast.error('Failed to update member');
     } finally {
       setIsSaving(false);
     }
-  }
+  };
 
   const handleSaveMember = async (formData: MemberData) => {
-    closeModel();
     try {
       setIsSaving(true);
       const normalizedData = normalizeMemberData(formData);
@@ -96,33 +96,36 @@ const AdminMembers = () => {
         return;
       }
       const data = await createMember(normalizedData);
-      setMembers(prev => prev ? [...prev, data] : [data]);
+      setMembers((prev) => (prev ? [...prev, data] : [data]));
+      setRecentlyUpdatedId(data.id);
+      setTimeout(() => setRecentlyUpdatedId(null), 1800);
       toast.success('Member created successfully');
+      closeModel();
     } catch (error) {
       console.error('Error creating member:', error);
       toast.error('Failed to create member');
     } finally {
       setIsSaving(false);
     }
-  }
+  };
 
   const closeModel = () => {
-    setIsModalOpen(false)
-    setSelectedMember(null)
-  }
+    setIsModalOpen(false);
+    setSelectedMember(null);
+  };
 
   // Filter members based on search query and status
-  const filteredMembers = members?.filter(member => {
-    const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase())
-    let matchesStatus = true
-    if (filterStatus === 'active') {
-      matchesStatus = member.status === 'ACTIVE'
-    } else if (filterStatus === 'inactive') {
-      matchesStatus = member.status !== 'ACTIVE'
-    }
-    return matchesSearch && matchesStatus
-  }) || []
-
+  const filteredMembers =
+    members?.filter((member) => {
+      const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase());
+      let matchesStatus = true;
+      if (filterStatus === 'active') {
+        matchesStatus = member.status === 'ACTIVE';
+      } else if (filterStatus === 'inactive') {
+        matchesStatus = member.status !== 'ACTIVE';
+      }
+      return matchesSearch && matchesStatus;
+    }) || [];
 
   return (
     <div className="grid gap-4 px-8 py-12">
@@ -140,28 +143,28 @@ const AdminMembers = () => {
           </div>
           <div className="flex items-center gap-3">
             <FilterIcon className="h-4 w-4 text-gray-500" />
-            <span className="text-sm text-gray-600 font-medium">Filter:</span>
+            <span className="text-sm font-medium text-gray-600">Filter:</span>
             <div className="flex gap-2">
               <Button
-                variant={filterStatus === 'active' ? "default" : "outline"}
+                variant={filterStatus === 'active' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setFilterStatus(filterStatus === 'active' ? 'all' : 'active')}
                 className={`transition-all duration-200 ${
                   filterStatus === 'active'
-                    ? "bg-green-500 hover:bg-green-600 text-white shadow-md" 
-                    : "border-gray-300 hover:bg-gray-50 hover:border-green-300"
+                    ? 'bg-green-500 text-white shadow-md hover:bg-green-600'
+                    : 'border-gray-300 hover:border-green-300 hover:bg-gray-50'
                 }`}
               >
                 Active
               </Button>
               <Button
-                variant={filterStatus === 'inactive' ? "default" : "outline"}
+                variant={filterStatus === 'inactive' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setFilterStatus(filterStatus === 'inactive' ? 'all' : 'inactive')}
                 className={`transition-all duration-200 ${
                   filterStatus === 'inactive'
-                    ? "bg-red-500 hover:bg-red-600 text-white shadow-md"
-                    : "border-gray-300 hover:bg-gray-50 hover:border-red-300"
+                    ? 'bg-red-500 text-white shadow-md hover:bg-red-600'
+                    : 'border-gray-300 hover:border-red-300 hover:bg-gray-50'
                 }`}
               >
                 Inactive
@@ -174,7 +177,7 @@ const AdminMembers = () => {
             )}
           </div>
         </div>
-        <div className="create-member-Button ">
+        <div className="create-member-Button">
           <Button className="flex items-center gap-2 shadow-md" onClick={handleAddMember}>
             <PlusIcon className="h-4 w-4" />
             Add New Member
@@ -182,7 +185,19 @@ const AdminMembers = () => {
         </div>
       </div>
 
-      <div className="members-list-section grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="members-list-section relative grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {isSaving && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/70 backdrop-blur-sm">
+            <div className="flex flex-col items-center gap-3 rounded-2xl border border-gray-100 bg-white px-10 py-7 shadow-2xl">
+              <div className="relative h-12 w-12">
+                <div className="absolute inset-0 animate-spin rounded-full border-4 border-gray-200 border-t-blue-500" />
+                <div className="absolute inset-0 animate-ping rounded-full border-2 border-blue-300 opacity-30" />
+              </div>
+              <p className="animate-pulse text-sm font-semibold text-gray-700">Saving changes…</p>
+              <p className="text-xs text-gray-400">Please wait</p>
+            </div>
+          </div>
+        )}
         {isInitialLoading ? (
           <div className="flex min-h-[400px] items-center justify-center">
             <div className="text-center">
@@ -194,7 +209,11 @@ const AdminMembers = () => {
           filteredMembers.map((member) => (
             <div
               key={member.id}
-              className="flex overflow-hidden rounded-lg border-1 border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md max-h-28"
+              className={`flex max-h-28 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-500 hover:shadow-md ${
+                recentlyUpdatedId === member.id
+                  ? 'scale-[1.01] ring-2 shadow-blue-100 ring-blue-400'
+                  : ''
+              }`}
             >
               <div className="w-1/3 bg-gray-100">
                 {member.avatarUrl ? (
@@ -223,9 +242,12 @@ const AdminMembers = () => {
                     <p className="truncate text-xs text-gray-600">{member.role}</p>
                   </div>
                   <div className="member-card-action-section flex gap-2">
-                    <Button  onClick={() => handleEdit(member)} className="cursor-pointer rounded-md bg-gray-200 p-1.5 text-gray-500 hover:text-gray-700">
+                    <Button
+                      onClick={() => handleEdit(member)}
+                      className="cursor-pointer rounded-md bg-gray-200 p-1.5 text-gray-500 hover:text-gray-700"
+                    >
                       <PenIcon size={16} />
-                    </Button >
+                    </Button>
                   </div>
                 </div>
 
@@ -234,8 +256,9 @@ const AdminMembers = () => {
                   <span className="text-xs text-gray-500">Joined {getYear(member.year)}</span>
                   <div className="flex items-center gap-1">
                     <div
-                      className={`h-2 w-2 rounded-full ${member.status === 'ACTIVE' ? 'bg-green-400' : 'bg-gray-400'
-                        }`}
+                      className={`h-2 w-2 rounded-full ${
+                        member.status === 'ACTIVE' ? 'bg-green-400' : 'bg-gray-400'
+                      }`}
                     />
                     <span className="text-xs font-medium text-gray-600">
                       {member.status.toLowerCase()}
@@ -249,10 +272,10 @@ const AdminMembers = () => {
           <div className="flex min-h-[400px] w-full items-center justify-center">
             <div className="text-center">
               <p className="text-gray-600">
-                {members && members.length > 0 
-                  ? (searchQuery || filterStatus !== 'all'
-                      ? `No members found matching ${searchQuery ? `"${searchQuery}"` : ''} ${filterStatus !== 'all' ? `${filterStatus} filter` : ''}`.trim()
-                      : 'No members found.')
+                {members && members.length > 0
+                  ? searchQuery || filterStatus !== 'all'
+                    ? `No members found matching ${searchQuery ? `"${searchQuery}"` : ''} ${filterStatus !== 'all' ? `${filterStatus} filter` : ''}`.trim()
+                    : 'No members found.'
                   : 'No members found.'}
               </p>
               {(searchQuery || filterStatus !== 'all') && members && members.length > 0 && (
@@ -260,8 +283,8 @@ const AdminMembers = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => {
-                    setSearchQuery('')
-                    setFilterStatus('all')
+                    setSearchQuery('');
+                    setFilterStatus('all');
                   }}
                   className="mt-2 text-blue-500 hover:text-blue-600"
                 >
@@ -278,8 +301,8 @@ const AdminMembers = () => {
         onEdit={handleEditMember}
         onSave={handleSaveMember}
         member={selectedMember}
+        isSaving={isSaving}
       />
-
     </div>
   );
 };

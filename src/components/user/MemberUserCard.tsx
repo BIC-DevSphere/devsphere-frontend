@@ -27,8 +27,11 @@ const MemberUserCard = () => {
   if (!members.length) return <p className="text-center py-10">No members found.</p>;
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-10">
-      <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
+    <section>
+      <h2 className="text-red-700 mb-10 text-center text-5xl font-bold">
+        Meet Our Team
+      </h2>
+      <div className="flex flex-wrap justify-center sm:justify-between gap-x-20">
         {members.map((member) => (
           <MemberCard key={member.id} member={member} />
         ))}

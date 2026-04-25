@@ -1,0 +1,69 @@
+@layer components {
+  .hero-motion-content {
+    @apply relative origin-top;
+    transform: translateY(calc(var(--hero-progress) * -52px))
+      scale(calc(1 - (var(--hero-progress) * 0.16)));
+    opacity: calc(1 - (var(--hero-progress) * 0.74));
+    filter: blur(calc(var(--hero-progress) * 2.4px));
+    will-change: transform, opacity, filter;
+    transition:
+      transform 120ms linear,
+      opacity 120ms linear,
+      filter 120ms linear;
+  }
+
+  .hero-motion-rocket-left {
+    transform: translateX(calc(var(--hero-progress) * -22px))
+      translateY(calc(var(--hero-progress) * -20px)) rotate(calc(var(--hero-progress) * -10deg));
+    opacity: calc(1 - (var(--hero-progress) * 0.55));
+    transition:
+      transform 120ms linear,
+      opacity 120ms linear;
+  }
+
+  .hero-motion-rocket-right {
+    transform: translateX(calc(var(--hero-progress) * 22px))
+      translateY(calc(var(--hero-progress) * -20px)) rotate(calc(var(--hero-progress) * 10deg));
+    opacity: calc(1 - (var(--hero-progress) * 0.55));
+    transition:
+      transform 120ms linear,
+      opacity 120ms linear;
+  }
+
+  .hero-motion-gallery {
+    transform: translateY(calc(var(--hero-progress) * -28px))
+      scale(calc(1 - (var(--hero-progress) * 0.08)));
+    opacity: calc(1 - (var(--hero-progress) * 0.5));
+    filter: saturate(calc(1 - (var(--hero-progress) * 0.2)));
+    will-change: transform, opacity;
+    transition:
+      transform 120ms linear,
+      opacity 120ms linear,
+      filter 120ms linear;
+  }
+
+  .hero-motion-panel {
+    transform: translateY(calc((1 - var(--hero-progress)) * 44px))
+      scale(calc(0.985 + (var(--hero-progress) * 0.015)));
+    opacity: calc(0.6 + (var(--hero-progress) * 0.4));
+    box-shadow: 0 -20px 50px rgba(15, 23, 42, calc(var(--hero-progress) * 0.14));
+    transition:
+      transform 120ms linear,
+      opacity 120ms linear,
+      box-shadow 120ms linear;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-motion-content,
+  .hero-motion-gallery,
+  .hero-motion-rocket-left,
+  .hero-motion-rocket-right,
+  .hero-motion-panel {
+    transform: none;
+    opacity: 1;
+    filter: none;
+    box-shadow: none;
+    transition: none;
+  }
+}

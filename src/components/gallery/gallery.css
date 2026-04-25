@@ -1,0 +1,30 @@
+.gallery-track {
+  animation: scroll 40s linear infinite;
+}
+
+.gallery-container:hover .gallery-track {
+  animation-play-state: paused;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+.gallery-item:hover {
+  transform: rotate(0deg) !important;
+}
+
+.pin {
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20%);
+}
+
+.polaroid-card {
+  transform: translateY(10%);
+}

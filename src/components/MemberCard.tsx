@@ -13,13 +13,13 @@ const MemberCard = ({ member }: MemberCardProps) => {
   )}&background=random&size=200`;
 
   return (
-    <div className="flex flex-col items-center text-center px-4 py-8 gap-3">
+    <div className="flex flex-col items-center text-center py-8 gap-3">
       {/* Avatar */}
-      <div className="w-40 h-40 rounded-[1.5rem] overflow-hidden">
+      <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg p-2">
         <img
           src={member.avatarUrl ?? fallbackAvatar}
           alt={member.name}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover rounded-lg"
         />
       </div>
 
