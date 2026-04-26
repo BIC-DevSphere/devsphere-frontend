@@ -41,22 +41,37 @@ const ProjectSection: React.FC = () => {
 
   return (
     <section>
-      <h2 className="text-red-700 mb-10 text-center text-5xl font-bold">Projects</h2>
-
-      {/* Filter Buttons */}
-      <div className="mb-8 flex flex-wrap justify-start gap-4">
-        {FILTERS.map((filter, idx) => (
-          <Button
-            key={`filter-item-${idx}`}
-            onClick={() => setActiveFilter(filter.tag)}
-            className={`flex items-center gap-2.5 rounded-full border border-gray-200 bg-white/70 px-6 py-6 text-base font-semibold text-gray-800 shadow-sm backdrop-blur-md transition-all hover:bg-white`}
-          >
-            <span className="text-2xl">{filter.icon}</span>
-            {filter.label}
-          </Button>
-        ))}
+      <div className="mb-10 flex flex-col gap-4">
+        <div className="flex items-center gap-3">
+          <span className="block h-px w-6 bg-red-700" />
+          <h2 className="text-xs font-bold tracking-widest uppercase text-red-700">
+            Projects
+          </h2>
+        </div>
+        <h3 className="text-3xl font-bold text-slate-900 md:text-4xl">
+          Built by the community
+        </h3>
       </div>
 
+      {/* Filter Buttons */}
+<div className="mb-8 flex flex-wrap justify-start gap-1 rounded-xl border border-slate-100 bg-slate-50/80 p-2 w-fit backdrop-blur-md shadow-sm">
+  {FILTERS.map((filter, idx) => (
+    <Button
+      key={`filter-item-${idx}`}
+      onClick={() => setActiveFilter(filter.tag)}
+      className={`flex items-center gap-2 rounded-lg px-3 py-5 text-md font-medium transition-all duration-200 border
+        ${
+          activeFilter === filter.tag
+            ? 'bg-white border-slate-200 text-gray-800 shadow-sm'
+            : 'bg-transparent border-transparent text-gray-500 shadow-none hover:bg-white/60 hover:text-gray-700'
+        }
+      `}
+    >
+      <span className="text-base leading-none">{filter.icon}</span>
+      {filter.label}
+    </Button>
+  ))}
+</div>
       {/* Projects Grid */}
       <div className="grid gap-6 md:grid-cols-3">
         {filteredProjects.map((project) => (
