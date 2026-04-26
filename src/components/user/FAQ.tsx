@@ -51,6 +51,18 @@ const FAQ = () => {
   ];
 
   return (
+    <section>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-3">
+          <span className="block h-px w-6 bg-red-700" />
+          <h2 className="text-xs font-bold tracking-widest uppercase text-red-700">
+            FAQ
+          </h2>
+        </div>
+        <h3 className="text-3xl font-bold text-slate-900 md:text-4xl">
+          Frequently Asked Questions
+        </h3>
+      </div>
     <div className="grid grid-cols-1 items-start gap-12 py-16 md:grid-cols-2 md:gap-24">
       <div className="space-y-4">
         {faqs.map((faq, index) => (
@@ -73,7 +85,7 @@ const FAQ = () => {
               type="email"
               placeholder="Enter Your Email"
               className="w-full rounded-full border border-gray-200 bg-gray-50 px-8 py-5 text-gray-800 placeholder-gray-400 shadow-sm transition-all focus:border-red-500 focus:bg-white focus:ring-4 focus:ring-red-500/10 focus:outline-none"
-            />
+              />
           </div>
           <button className="rounded-full bg-red-700 px-10 py-5 font-bold whitespace-nowrap text-white transition-all hover:bg-red-700 hover:shadow-lg hover:shadow-red-600/20 active:scale-95">
             Lets Talk
@@ -81,6 +93,7 @@ const FAQ = () => {
         </div>
       </div>
     </div>
+              </section>
   );
 };
 

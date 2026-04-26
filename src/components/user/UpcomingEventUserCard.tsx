@@ -46,13 +46,10 @@ const UpcomingEventUserCard = () => {
           </h2>
         </div>
         <h3 className="text-3xl font-bold text-slate-900 md:text-4xl">
-          What's happening
+          What's Happening
         </h3>
-        <p className="max-w-2xl text-base text-slate-600">
-          Industry-grade events, workshops, and summits designed to push your skills forward.
-        </p>
       </div>
-      <div className="flex h-88 w-full overflow-hidden rounded-2xl bg-white shadow-xl transition-all duration-300 hover:shadow-2xl">
+      <div className="flex h-88 w-full overflow-hidden rounded-2xl bg-white shadow-lg transition-shadow duration-300 hover:shadow-xl">
         {/* Left Image */}
         <div className="relative h-full w-1/3 p-4">
           <img
