@@ -345,7 +345,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
 
               <div className="space-y-2">
                 <Label htmlFor="discordUrl" className="text-muted-foreground text-sm font-medium">
-                  Discord Link
+                  Discord Username
                 </Label>
                 <Input
                   id="discordUrl"

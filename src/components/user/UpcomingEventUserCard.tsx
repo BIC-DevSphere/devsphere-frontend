@@ -38,7 +38,20 @@ const UpcomingEventUserCard = () => {
 
   return (
     <section>
-      <h2 className="text-red-700 mb-10 text-center text-5xl font-bold">Upcoming Events</h2>
+      <div className="mb-10 flex flex-col gap-4">
+        <div className="flex items-center gap-3">
+          <span className="block h-px w-6 bg-red-700" />
+          <h2 className="text-xs font-bold tracking-widest uppercase text-red-700">
+            Events
+          </h2>
+        </div>
+        <h3 className="text-3xl font-bold text-slate-900 md:text-4xl">
+          What's happening
+        </h3>
+        <p className="max-w-2xl text-base text-slate-600">
+          Industry-grade events, workshops, and summits designed to push your skills forward.
+        </p>
+      </div>
       <div className="flex h-88 w-full overflow-hidden rounded-2xl bg-white shadow-xl transition-all duration-300 hover:shadow-2xl">
         {/* Left Image */}
         <div className="relative h-full w-1/3 p-4">
