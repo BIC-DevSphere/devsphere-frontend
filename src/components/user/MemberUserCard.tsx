@@ -28,7 +28,7 @@ const MemberUserCard = () => {
 
   return (
     <section>
-      <div className="mb-10 flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
         <div className="flex items-center gap-3">
           <span className="block h-px w-6 bg-red-700" />
           <h2 className="text-xs font-bold tracking-widest uppercase text-red-700">
@@ -36,7 +36,7 @@ const MemberUserCard = () => {
           </h2>
         </div>
         <h3 className="text-3xl font-bold text-slate-900 md:text-4xl">
-          Meet our people
+          Meet Our People
         </h3>
       </div>
       <div className="flex flex-wrap justify-between gap-x-8 gap-y-12 sm:gap-x-16 md:gap-x-20 pb-12 md:pb-24 pt-4">

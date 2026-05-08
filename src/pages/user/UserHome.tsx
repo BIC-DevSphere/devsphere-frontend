@@ -56,7 +56,7 @@ const UserHome = () => {
       >
         <div className="hero-motion-content">
           <img
-            className="hero-motion-rocket-left absolute -top-10 -left-20 w-24 md:-top-12 md:-left-36 md:w-40"
+            className="hero-motion-rocket-left absolute -top-10 -left-20 w-24 md:-top-16 md:-left-40 md:w-56"
             src="/rocket.svg"
             alt="rocket"
           />
@@ -69,7 +69,7 @@ const UserHome = () => {
             <span className="text-red-700">Together</span>
           </div>
           <img
-            className="hero-motion-rocket-right absolute -right-20 -bottom-10 w-24 md:-right-36 md:-bottom-12 md:w-40"
+            className="hero-motion-rocket-right absolute -right-20 -bottom-10 w-24 md:-right-48 md:-bottom-16 md:w-56"
             src="/rocket.svg"
             alt="rocket"
           />
@@ -79,8 +79,8 @@ const UserHome = () => {
         </div>
       </section>
 
-      <div style={heroStyle} className="hero-motion-panel relative z-10 rounded-t-3xl bg-white">
-        <div className="space-y-20 px-6 py-20 md:px-40">
+      <div style={heroStyle} className="hero-motion-panel relative z-10 bg-white">
+        <div className="space-y-40 px-6 py-20 md:px-40">
           <section data-section-id="events">
             <UpcomingEventUserCard />
           </section>
